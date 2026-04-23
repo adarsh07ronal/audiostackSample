@@ -26,7 +26,6 @@ pcm.setchannels(channels)
 pcm.setrate(rate)
 pcm.setformat(alsaaudio.PCM_FORMAT_S16_LE)
 pcm.setperiodsize(CHUNK)
-pcm.setperiods(4)
 
 print("Starting ALSA Audio Stack...")
 
@@ -46,8 +45,12 @@ try:
         out = mix3(m, n, c, wm, wn, wc)
 
         # Write to ALSA
-        while pcm.write(out) == 0:
-            pass
+        while True:
+            try:
+                pcm.write(out)
+                break
+            except alsaaudio.ALSAAudioError:
+                continue
 
         # Debug print (not too frequent)
         if i % 500 == 0:
