@@ -43,7 +43,7 @@ try:
 
         # Mix audio
         out = mix3(m, n, c, wm, wn, wc)
-
+        print(len(out))
         # Write to ALSA
         while True:
             pcm.write(out)
