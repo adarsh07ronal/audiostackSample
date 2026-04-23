@@ -58,7 +58,7 @@ try:
             print(len(out))
 
         # Real-time pacing
-        time.sleep(CHUNK / rate * 1.5)
+        #time.sleep(CHUNK / rate * 1.5)
 
 except KeyboardInterrupt:
     print("\nStopping audio...")
