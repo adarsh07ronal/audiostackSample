@@ -45,8 +45,8 @@ try:
         out = mix3(m, n, c, wm, wn, wc)
         print(len(out))
         # Write to ALSA
-        while True:
-            pcm.write(out)
+        
+        pcm.write(out)
 
         # Debug print (not too frequent)
         if i % 1000 == 0:
