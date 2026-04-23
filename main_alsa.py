@@ -26,7 +26,7 @@ pcm.setchannels(channels)
 pcm.setrate(rate)
 pcm.setformat(alsaaudio.PCM_FORMAT_S16_LE)
 pcm.setperiodsize(CHUNK)
-pcm.setbuffer(CHUNK * 4)
+pcm.setperiods(4)
 
 print("Starting ALSA Audio Stack...")
 
