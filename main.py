@@ -34,38 +34,28 @@ try:
     # Main real-time audio loop
     for i in range(1000):
 
-        # Read PCM data from each source (HAL)
         m = music.read(CHUNK)
         n = nav.read(CHUNK)
         c = call.read(CHUNK)
 
-        # Update routing mode (simulate events)
         router.update_mode(i)
 
-        # Get mixing weights based on routing decision
-        weights = router.get_weights()
+        wm, wn, wc = router.get_weights()
 
-        # Support both tuple and dictionary formats
-        if isinstance(weights, dict):
-            wm = weights["music"]
-            wn = weights["nav"]
-            wc = weights["call"]
-        else:
-            wm, wn, wc = weights
-
-        # Mix audio streams (DSP layer)
         out = mix3(m, n, c, wm, wn, wc)
 
-        # Send mixed audio to output device
-        # exception_on_underflow=False prevents crashes
+        # 🔒 Hard enforce correct size (keep this)
+        EXPECTED = CHUNK * channels * width
+        if len(out) != EXPECTED:
+            if len(out) < EXPECTED:
+                out += b'\x00' * (EXPECTED - len(out))
+            else:
+                out = out[:EXPECTED]
+
         stream.write(out, exception_on_underflow=False)
 
-        # Print status occasionally (avoid performance impact)
         if i % 50 == 0:
             print(f"Mode: {router.mode}")
-
-        # Maintain real-time playback timing
-        time.sleep(CHUNK / rate)
 
 except KeyboardInterrupt:
     print("\nStopping audio...")
