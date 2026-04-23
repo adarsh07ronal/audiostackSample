@@ -4,7 +4,7 @@ from hal import AudioHAL
 from mixer import mix3
 from router import AudioRouter
 
-CHUNK = 1024
+CHUNK = 4096
 
 # Load audio streams
 music = AudioHAL("streams/music_16.wav")
@@ -19,7 +19,7 @@ channels, width, rate = music.get_params()
 # Create ALSA PCM device
 pcm = alsaaudio.PCM(
     type=alsaaudio.PCM_PLAYBACK,
-    device='plughw:0,0'   # IMPORTANT: use plughw for auto conversion
+    device='default'   # IMPORTANT: use plughw for auto conversion
 )
 
 pcm.setchannels(channels)
@@ -50,9 +50,10 @@ try:
         # Debug print (not too frequent)
         if i % 100 == 0:
             print(f"Mode: {router.mode}")
+            print(len(out))
 
         # Real-time pacing
-        time.sleep(CHUNK / rate)
+        time.sleep(CHUNK / rate * 1.2)
 
 except KeyboardInterrupt:
     print("\nStopping audio...")
