@@ -43,10 +43,19 @@ try:
 
         # Mix audio
         out = mix3(m, n, c, wm, wn, wc)
-        print(len(m), len(n), len(c))
-        print(len(out))
-        # Write to ALSA
-        
+
+        EXPECTED = CHUNK * channels * 2   # 8192
+
+        # 🔥 HARD FIX (very important)
+        if len(out) != EXPECTED:
+            # Debug once
+            print(f"FIXING BUFFER: {len(out)} -> {EXPECTED}")
+
+            if len(out) < EXPECTED:
+                out += b'\x00' * (EXPECTED - len(out))
+            else:
+                out = out[:EXPECTED]
+
         pcm.write(out)
 
         # Debug print (not too frequent)
