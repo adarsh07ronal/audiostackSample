@@ -43,6 +43,7 @@ try:
 
         # Mix audio
         out = mix3(m, n, c, wm, wn, wc)
+        print(len(m), len(n), len(c))
         print(len(out))
         # Write to ALSA
         
