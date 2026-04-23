@@ -4,7 +4,7 @@ from hal import AudioHAL
 from mixer import mix3
 from router import AudioRouter
 
-CHUNK = 8192
+CHUNK = 4096
 
 # Load audio streams
 music = AudioHAL("streams/music_16.wav")
@@ -46,16 +46,11 @@ try:
 
         # Write to ALSA
         while True:
-            try:
-                pcm.write(out)
-                break
-            except alsaaudio.ALSAAudioError:
-                continue
+            pcm.write(out)
 
         # Debug print (not too frequent)
-        if i % 500 == 0:
+        if i % 1000 == 0:
             print(f"Mode: {router.mode}")
-            print(len(out))
 
         # Real-time pacing
         #time.sleep(CHUNK / rate * 1.5)
