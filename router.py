@@ -34,11 +34,11 @@ class AudioRouter:
         """
 
         # Navigation event window
-        if 100 < i < 300:
+        if 50 < i < 150:
             self.mode = "nav"
 
         # Call event window (higher priority than navigation)
-        elif 400 < i < 700:
+        elif 200 < i < 350:
             self.mode = "call"
 
         # Default state → music playback

@@ -59,7 +59,7 @@ try:
         pcm.write(out)
 
         # Debug print (not too frequent)
-        if i % 500 == 0:
+        if i % 100 == 0:
             print(f"Mode: {router.mode}")
 
         # Real-time pacing
