@@ -1,699 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AudioStack — Mini Automotive Audio Stack</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AudioStack — Automotive Audio Stack Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#000;--secondary:#6366f1;--bg:#fff;--surface:#f9fafb;
+  --border:#e5e7eb;--muted:#6b7280;--text:#111827;
+  --music:#6366f1;--nav:#f59e0b;--call:#ef4444;--green:#22c55e;
+  --r-sm:4px;--r-md:8px;--r-lg:16px;
+  --sp-sm:8px;--sp-md:16px;--sp-lg:32px;
+}
+body{font-family:'Inter',sans-serif;font-size:16px;background:var(--bg);color:var(--text);line-height:1.6}
 
-    :root {
-      --primary: #000000;
-      --secondary: #6366f1;
-      --bg: #ffffff;
-      --surface: #f9fafb;
-      --border: #e5e7eb;
-      --muted: #6b7280;
-      --text: #111827;
-      --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 16px;
-      --sp-sm: 8px;
-      --sp-md: 16px;
-      --sp-lg: 32px;
-      --music-color: #6366f1;
-      --nav-color: #f59e0b;
-      --call-color: #ef4444;
-    }
+/* ── NAV ─────────────────────────────── */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header-top{max-width:1200px;margin:0 auto;padding:12px var(--sp-lg);display:flex;align-items:center;gap:var(--sp-md)}
+.logo{font-weight:800;font-size:1.1rem;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--secondary);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.5)}}
+.header-top a{text-decoration:none;color:var(--muted);font-size:.8rem;font-weight:500;margin-left:auto;display:flex;align-items:center;gap:6px}
+.header-top a:hover{color:var(--text)}
+.tab-bar{max-width:1200px;margin:0 auto;padding:0 var(--sp-lg);display:flex;gap:0;overflow-x:auto}
+.tab{padding:10px 18px;font-size:.82rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);white-space:nowrap;transition:.15s;background:none;border-top:none;border-left:none;border-right:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--secondary);border-bottom-color:var(--secondary)}
 
-    body {
-      font-family: 'Inter', sans-serif;
-      font-size: 16px;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+/* ── LAYOUT ──────────────────────────── */
+.page{display:none;max-width:1200px;margin:0 auto;padding:var(--sp-lg)}
+.page.active{display:block}
 
-    /* NAV */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 var(--sp-lg);
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .nav-logo {
-      font-weight: 800;
-      font-size: 1.1rem;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: var(--sp-sm);
-    }
-    .nav-logo-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--secondary);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.4); }
-    }
-    .nav-links { display: flex; gap: var(--sp-lg); align-items: center; }
-    .nav-links a {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.875rem;
-      font-weight: 500;
-      transition: color 0.15s;
-    }
-    .nav-links a:hover { color: var(--text); }
-    .nav-badge {
-      background: var(--secondary);
-      color: #fff;
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 99px;
-    }
+/* ── TYPOGRAPHY ──────────────────────── */
+h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:12px}
+h1 span{color:var(--secondary)}
+h2{font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin:var(--sp-lg) 0 var(--sp-md)}
+h3{font-size:1.1rem;font-weight:700;margin:var(--sp-md) 0 8px}
+h4{font-size:.95rem;font-weight:700;margin:var(--sp-sm) 0 4px;color:var(--secondary)}
+p{color:var(--muted);margin-bottom:var(--sp-md);line-height:1.7}
+p b,p strong{color:var(--text)}
+ul,ol{color:var(--muted);padding-left:20px;margin-bottom:var(--sp-md)}
+li{margin-bottom:4px;line-height:1.6}
+li b,li strong{color:var(--text)}
 
-    /* HERO */
-    .hero {
-      padding: 80px var(--sp-lg) 60px;
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 60px;
-      align-items: center;
-    }
-    .hero-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 4px 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-bottom: var(--sp-md);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    h1 {
-      font-size: clamp(2rem, 4vw, 3rem);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
-      margin-bottom: var(--sp-md);
-    }
-    h1 span { color: var(--secondary); }
-    .hero-sub {
-      color: var(--muted);
-      font-size: 1.05rem;
-      margin-bottom: var(--sp-lg);
-      max-width: 440px;
-    }
-    .hero-actions { display: flex; gap: var(--sp-sm); flex-wrap: wrap; }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      text-decoration: none;
-    }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: #1f2937; }
-    .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
-    .btn-outline:hover { border-color: var(--text); }
+/* ── CHIPS / BADGES ─────────────────── */
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tag-purple{background:#eef2ff;color:var(--secondary)}
+.tag-yellow{background:#fef3c7;color:#b45309}
+.tag-red{background:#fee2e2;color:#dc2626}
+.tag-green{background:#dcfce7;color:#15803d}
+.tag-gray{background:var(--surface);color:var(--muted)}
 
-    /* HERO VISUAL */
-    .hero-visual {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--sp-lg);
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-visual-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: var(--sp-md);
-    }
-    .waveform-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .waveform-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .waveform-name {
-      font-size: 0.75rem;
-      font-weight: 600;
-      width: 36px;
-      color: var(--muted);
-    }
-    .waveform {
-      flex: 1;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-    .waveform-bar {
-      flex: 1;
-      border-radius: 2px;
-      transition: height 0.3s ease, opacity 0.3s ease;
-      min-height: 3px;
-    }
-    .waveform-vol {
-      font-size: 0.7rem;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 500;
-      width: 36px;
-      text-align: right;
-    }
+/* ── CARDS ───────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-lg);margin-bottom:var(--sp-md)}
+.card-accent{border-top:3px solid var(--secondary)}
+.card h3{margin-top:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-md)}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-md)}
 
-    /* SECTION */
-    section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 60px var(--sp-lg);
-    }
-    .section-header {
-      margin-bottom: 40px;
-    }
-    .section-tag {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--secondary);
-      margin-bottom: 8px;
-    }
-    h2 {
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      line-height: 1.2;
-      margin-bottom: 12px;
-    }
-    .section-sub {
-      color: var(--muted);
-      font-size: 1rem;
-      max-width: 560px;
-    }
+/* ── CODE ────────────────────────────── */
+pre,code{font-family:'JetBrains Mono',monospace}
+code{font-size:.8rem;background:var(--surface);border:1px solid var(--border);padding:2px 6px;border-radius:var(--r-sm)}
+pre{background:#0f172a;color:#e2e8f0;padding:var(--sp-lg);border-radius:var(--r-lg);overflow-x:auto;font-size:.78rem;line-height:1.75;margin-bottom:var(--sp-md);border:1px solid #1e293b}
+pre .kw{color:#818cf8}
+pre .fn{color:#34d399}
+pre .cm{color:#475569}
+pre .str{color:#fb923c}
+pre .num{color:#f472b6}
+pre .cl{color:#facc15}
+pre .op{color:#94a3b8}
 
-    /* INTERACTIVE DEMO */
-    .demo-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--sp-lg);
-    }
-    .demo-top {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--sp-lg);
-      margin-bottom: var(--sp-lg);
-    }
+/* ── TABLES ──────────────────────────── */
+.tbl-wrap{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:var(--sp-lg)}
+table{width:100%;border-collapse:collapse;font-size:.875rem}
+th{background:var(--surface);padding:10px 16px;text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td code{font-size:.75rem}
 
-    /* MODE SWITCHER */
-    .mode-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: var(--sp-sm);
-    }
-    .mode-buttons {
-      display: flex;
-      gap: var(--sp-sm);
-      flex-wrap: wrap;
-    }
-    .mode-btn {
-      padding: 8px 18px;
-      border-radius: var(--radius-md);
-      border: 2px solid var(--border);
-      background: var(--bg);
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .mode-btn:hover { border-color: var(--secondary); color: var(--secondary); }
-    .mode-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
-    .mode-btn[data-mode="music"].active { border-color: var(--music-color); background: var(--music-color); }
-    .mode-btn[data-mode="nav"].active { border-color: var(--nav-color); background: var(--nav-color); }
-    .mode-btn[data-mode="call"].active { border-color: var(--call-color); background: var(--call-color); }
+/* ── CALLOUTS ────────────────────────── */
+.callout{border-left:4px solid var(--secondary);background:#eef2ff;border-radius:0 var(--r-md) var(--r-md) 0;padding:var(--sp-md) var(--sp-lg);margin-bottom:var(--sp-md)}
+.callout.warn{border-color:var(--nav);background:#fef3c7}
+.callout.tip{border-color:var(--green);background:#f0fdf4}
+.callout.danger{border-color:var(--call);background:#fef2f2}
+.callout p{margin:0;color:var(--text)}
+.callout-title{font-weight:700;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
 
-    /* WEIGHTS */
-    .weights-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .weight-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .weight-icon { font-size: 1rem; width: 24px; text-align: center; }
-    .weight-label {
-      font-weight: 600;
-      font-size: 0.875rem;
-      width: 80px;
-    }
-    .weight-bar-bg {
-      flex: 1;
-      height: 8px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .weight-bar-fill {
-      height: 100%;
-      border-radius: 99px;
-      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .weight-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 500;
-      width: 36px;
-      text-align: right;
-      color: var(--muted);
-    }
+/* ── FLOW ────────────────────────────── */
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-lg);margin-bottom:var(--sp-md)}
+.flow-box{border:2px solid var(--border);border-radius:var(--r-md);padding:8px 16px;font-size:.8rem;font-weight:600;text-align:center;min-width:100px}
+.flow-box.music{border-color:var(--music);color:var(--music)}
+.flow-box.nav{border-color:var(--nav);color:#b45309}
+.flow-box.call{border-color:var(--call);color:var(--call)}
+.flow-box.dark{background:var(--primary);color:#fff;border-color:var(--primary)}
+.flow-box.indigo{background:var(--secondary);color:#fff;border-color:var(--secondary)}
+.flow-arrow{color:#9ca3af;font-size:1.2rem}
+.flow-col{display:flex;flex-direction:column;gap:6px}
 
-    /* LIVE VISUALIZER */
-    .visualizer-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: var(--sp-sm);
-    }
-    canvas#viz {
-      width: 100%;
-      height: 120px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      background: #000;
-      display: block;
-    }
+/* ── ANALOGY BOX ─────────────────────── */
+.analogy{background:#faf5ff;border:1px solid #e9d5ff;border-radius:var(--r-lg);padding:var(--sp-lg);margin-bottom:var(--sp-md)}
+.analogy-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c3aed;margin-bottom:6px}
 
-    /* STATUS BAR */
-    .status-bar {
-      margin-top: var(--sp-md);
-      display: flex;
-      align-items: center;
-      gap: var(--sp-md);
-      padding: 12px var(--sp-md);
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 0.8rem;
-    }
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      animation: pulse 1.5s infinite;
-      flex-shrink: 0;
-    }
-    .status-text { font-weight: 500; }
-    .status-mode {
-      margin-left: auto;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--muted);
-    }
+/* ── FILE DOC ────────────────────────── */
+.file-header{display:flex;align-items:center;gap:var(--sp-md);padding:var(--sp-md) var(--sp-lg);background:var(--primary);color:#fff;border-radius:var(--r-lg) var(--r-lg) 0 0;margin-bottom:0}
+.file-header h3{margin:0;color:#fff;font-family:'JetBrains Mono',monospace;font-size:1rem}
+.file-block{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:var(--sp-lg)}
+.file-body{padding:var(--sp-lg);background:var(--bg)}
+.symbol{border-left:3px solid var(--secondary);padding:var(--sp-sm) var(--sp-md);margin-bottom:var(--sp-md);background:var(--surface);border-radius:0 var(--r-md) var(--r-md) 0}
+.symbol-sig{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:4px}
+.symbol-desc{font-size:.85rem;color:var(--muted)}
 
-    /* ARCHITECTURE */
-    .arch-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--sp-md);
-      margin-bottom: var(--sp-lg);
-    }
-    .arch-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--sp-lg);
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .arch-card:hover {
-      border-color: var(--secondary);
-      box-shadow: 0 4px 24px rgba(99,102,241,0.1);
-    }
-    .arch-card-accent {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
-    .arch-card-icon {
-      font-size: 1.5rem;
-      margin-bottom: 12px;
-    }
-    .arch-card h3 {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .arch-card p {
-      font-size: 0.875rem;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .arch-card code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 2px 6px;
-      border-radius: var(--radius-sm);
-      display: inline-block;
-      margin-top: 8px;
-    }
+/* ── HERO ────────────────────────────── */
+.hero{padding:48px 0 32px;border-bottom:1px solid var(--border);margin-bottom:var(--sp-lg)}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:680px;margin-bottom:var(--sp-lg)}
+.hero-stats{display:flex;gap:var(--sp-lg);flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:1.8rem;font-weight:800;letter-spacing:-.03em;color:var(--text)}
+.stat-label{font-size:.75rem;color:var(--muted);font-weight:500}
 
-    /* FLOW DIAGRAM */
-    .flow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: var(--sp-lg);
-      overflow-x: auto;
-      flex-wrap: wrap;
-      gap: var(--sp-sm);
-    }
-    .flow-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-    }
-    .flow-box {
-      background: var(--bg);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 10px 16px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      white-space: nowrap;
-      text-align: center;
-    }
-    .flow-sub {
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-align: center;
-    }
-    .flow-arrow {
-      font-size: 1.2rem;
-      color: var(--border);
-      flex-shrink: 0;
-      padding: 0 4px;
-    }
-    .flow-box.music { border-color: var(--music-color); color: var(--music-color); }
-    .flow-box.nav { border-color: var(--nav-color); color: var(--nav-color); }
-    .flow-box.call { border-color: var(--call-color); color: var(--call-color); }
-    .flow-box.mixer { border-color: var(--secondary); background: var(--secondary); color: #fff; }
-    .flow-box.hal { border-color: var(--primary); background: var(--primary); color: #fff; }
-    .flow-col { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+/* ── INTERACTIVE DEMO ────────────────── */
+.demo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:var(--sp-lg);margin-bottom:var(--sp-lg)}
+.mode-btns{display:flex;gap:var(--sp-sm);margin-bottom:var(--sp-lg)}
+.mode-btn{padding:8px 20px;border-radius:var(--r-md);border:2px solid var(--border);background:var(--bg);font-weight:600;font-size:.875rem;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:6px}
+.mode-btn.active-music{border-color:var(--music);background:var(--music);color:#fff}
+.mode-btn.active-nav{border-color:var(--nav);background:var(--nav);color:#fff}
+.mode-btn.active-call{border-color:var(--call);background:var(--call);color:#fff}
+.weights{display:flex;flex-direction:column;gap:12px}
+.w-row{display:flex;align-items:center;gap:12px}
+.w-label{width:80px;font-weight:600;font-size:.85rem}
+.w-bg{flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.w-fill{height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.w-val{font-family:'JetBrains Mono',monospace;font-size:.8rem;width:32px;text-align:right;color:var(--muted)}
+canvas{width:100%;height:100px;border-radius:var(--r-md);border:1px solid var(--border);background:#000;display:block;margin-top:var(--sp-md)}
 
-    /* CODE SNIPPET */
-    .code-block {
-      background: #0f172a;
-      color: #e2e8f0;
-      border-radius: var(--radius-lg);
-      padding: var(--sp-lg);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      line-height: 1.7;
-      overflow-x: auto;
-      border: 1px solid #1e293b;
-    }
-    .code-block .kw { color: #818cf8; }
-    .code-block .fn { color: #34d399; }
-    .code-block .str { color: #fb923c; }
-    .code-block .cm { color: #64748b; }
-    .code-block .num { color: #f472b6; }
+/* ── INTERVIEW Q ─────────────────────── */
+.qa{border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:var(--sp-sm)}
+.qa-q{padding:var(--sp-md) var(--sp-lg);background:var(--surface);font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.qa-q:hover{background:#f3f4f6}
+.qa-a{padding:var(--sp-md) var(--sp-lg);display:none;border-top:1px solid var(--border);font-size:.875rem;color:var(--muted);line-height:1.7}
+.qa-a.open{display:block}
+.qa-a p{margin-bottom:8px;color:var(--muted)}
+.qa-a p:last-child{margin-bottom:0}
 
-    /* PRIORITY TABLE */
-    .priority-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-    }
-    .priority-table th {
-      background: var(--surface);
-      padding: 10px 16px;
-      text-align: left;
-      font-weight: 600;
-      color: var(--muted);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--border);
-    }
-    .priority-table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .priority-table tr:last-child td { border-bottom: none; }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 10px;
-      border-radius: 99px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .pill-music { background: #eef2ff; color: var(--music-color); }
-    .pill-nav { background: #fef3c7; color: #d97706; }
-    .pill-call { background: #fee2e2; color: #dc2626; }
-    .pill-low { background: var(--surface); color: var(--muted); }
-    .pill-high { background: #dcfce7; color: #16a34a; }
+/* ── MISC ────────────────────────────── */
+.section-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--secondary);margin-bottom:6px}
+.divider{border:none;border-top:1px solid var(--border);margin:var(--sp-lg) 0}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:.75rem;font-weight:600}
 
-    /* FOOTER */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: var(--sp-lg);
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-    footer a { color: var(--secondary); text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    /* DIVIDER */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    @media (max-width: 768px) {
-      .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 16px; }
-      .demo-top { grid-template-columns: 1fr; }
-      .arch-grid { grid-template-columns: 1fr; }
-      nav { padding: 0 16px; }
-      section { padding: 40px 16px; }
-    }
-  </style>
+@media(max-width:768px){
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .page{padding:var(--sp-md)}
+  .tab-bar{padding:0 var(--sp-md)}
+  .header-top{padding:12px var(--sp-md)}
+}
+</style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-logo">
-    <div class="nav-logo-dot"></div>
-    AudioStack
+<header>
+  <div class="header-top">
+    <div class="logo"><div class="logo-dot"></div>AudioStack</div>
+    <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      adarsh07ronal/audiostackSample
+    </a>
   </div>
-  <div class="nav-links">
-    <a href="#demo">Demo</a>
-    <a href="#architecture">Architecture</a>
-    <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank">GitHub</a>
-    <span class="nav-badge">Python</span>
+  <div class="tab-bar">
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+    <button class="tab" onclick="showTab('filereference')">File Reference</button>
+    <button class="tab" onclick="showTab('concepts')">Concepts &amp; Patterns</button>
+    <button class="tab" onclick="showTab('audiostack')">Automotive Stack</button>
+    <button class="tab" onclick="showTab('hwalternatives')">HW Alternatives</button>
+    <button class="tab" onclick="showTab('interview')">Interview Prep</button>
   </div>
-</nav>
+</header>
 
-<!-- HERO -->
-<div class="hero">
-  <div>
-    <div class="hero-tag">🚗 Automotive Audio Stack</div>
-    <h1>Priority-based<br /><span>audio routing</span><br />for vehicles</h1>
-    <p class="hero-sub">
-      A minimal Python simulation of how in-vehicle infotainment systems handle
-      competing audio streams — calls override navigation, which ducks music.
-    </p>
-    <div class="hero-actions">
-      <a href="#demo" class="btn btn-primary">Try the demo</a>
-      <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank" class="btn btn-outline">View on GitHub</a>
+<!-- ═══════════════════════════════════════
+     TAB 1 — OVERVIEW
+════════════════════════════════════════ -->
+<div class="page active" id="tab-overview">
+
+  <div class="hero">
+    <div class="section-label">Mini Automotive Audio Stack · Python</div>
+    <h1>Priority-based <span>audio routing</span><br>for in-vehicle systems</h1>
+    <p class="hero-sub">A self-contained Python simulation of how automotive infotainment systems manage three competing audio streams — music, navigation, and phone calls — using a HAL, a router, and a PCM mixer. Built to learn the Android Audio Stack from first principles.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">3</div><div class="stat-label">Audio Streams</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">Python Modules</div></div>
+      <div class="stat"><div class="stat-num">16-bit</div><div class="stat-label">PCM Output</div></div>
+      <div class="stat"><div class="stat-num">1024</div><div class="stat-label">Frames / Chunk</div></div>
     </div>
   </div>
 
-  <div class="hero-visual">
-    <div class="hero-visual-label">Live stream levels</div>
-    <div class="waveform-container">
-      <div class="waveform-row">
-        <div class="waveform-name" style="color:var(--music-color)">MUS</div>
-        <div class="waveform" id="wf-music"></div>
-        <div class="waveform-vol" id="wf-music-vol" style="color:var(--music-color)">1.0</div>
-      </div>
-      <div class="waveform-row">
-        <div class="waveform-name" style="color:var(--nav-color)">NAV</div>
-        <div class="waveform" id="wf-nav"></div>
-        <div class="waveform-vol" id="wf-nav-vol" style="color:var(--nav-color)">0.0</div>
-      </div>
-      <div class="waveform-row">
-        <div class="waveform-name" style="color:var(--call-color)">CALL</div>
-        <div class="waveform" id="wf-call"></div>
-        <div class="waveform-vol" id="wf-call-vol" style="color:var(--call-color)">0.0</div>
-      </div>
+  <h2>What this project does</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h4>🔊 Simulates a real IVI audio pipeline</h4>
+      <p>Reads three WAV streams (music, nav, call), mixes them with dynamic weights, and plays the result through PyAudio — exactly what an Android car head-unit does internally.</p>
     </div>
-  </div>
-</div>
-
-<hr class="divider" />
-
-<!-- DEMO -->
-<section id="demo">
-  <div class="section-header">
-    <div class="section-tag">Interactive</div>
-    <h2>Try the router live</h2>
-    <p class="section-sub">Switch between audio modes and watch the mixer weights update in real time — exactly as the Python router does.</p>
-  </div>
-
-  <div class="demo-card">
-    <div class="demo-top">
-      <!-- MODE SWITCHER -->
-      <div>
-        <div class="mode-label">Audio mode</div>
-        <div class="mode-buttons">
-          <button class="mode-btn active" data-mode="music" onclick="setMode('music')">🎵 Music</button>
-          <button class="mode-btn" data-mode="nav" onclick="setMode('nav')">🗺️ Navigation</button>
-          <button class="mode-btn" data-mode="call" onclick="setMode('call')">📞 Call</button>
-        </div>
-
-        <div style="margin-top:24px">
-          <div class="mode-label">Mixer weights</div>
-          <div class="weights-panel">
-            <div class="weight-row">
-              <div class="weight-icon">🎵</div>
-              <div class="weight-label" style="color:var(--music-color)">Music</div>
-              <div class="weight-bar-bg">
-                <div class="weight-bar-fill" id="wb-music" style="background:var(--music-color); width:100%"></div>
-              </div>
-              <div class="weight-value" id="wv-music">1.0</div>
-            </div>
-            <div class="weight-row">
-              <div class="weight-icon">🗺️</div>
-              <div class="weight-label" style="color:var(--nav-color)">Navigation</div>
-              <div class="weight-bar-bg">
-                <div class="weight-bar-fill" id="wb-nav" style="background:var(--nav-color); width:0%"></div>
-              </div>
-              <div class="weight-value" id="wv-nav">0.0</div>
-            </div>
-            <div class="weight-row">
-              <div class="weight-icon">📞</div>
-              <div class="weight-label" style="color:var(--call-color)">Call</div>
-              <div class="weight-bar-bg">
-                <div class="weight-bar-fill" id="wb-call" style="background:var(--call-color); width:0%"></div>
-              </div>
-              <div class="weight-value" id="wv-call">0.0</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VISUALIZER -->
-      <div>
-        <div class="visualizer-label">Mixed output waveform</div>
-        <canvas id="viz" width="600" height="240"></canvas>
-      </div>
+    <div class="card">
+      <h4>🚗 Implements priority ducking</h4>
+      <p>A navigation prompt ducks music to 30%. An incoming call mutes everything else. This mirrors Android's <strong>AudioFocus</strong> system and AAOS audio policy.</p>
     </div>
-
-    <div class="status-bar">
-      <div class="status-dot"></div>
-      <div class="status-text" id="status-text">Music playing at full volume</div>
-      <div class="status-mode" id="status-mode">mode=music • frame=0</div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider" />
-
-<!-- ARCHITECTURE -->
-<section id="architecture">
-  <div class="section-header">
-    <div class="section-tag">Architecture</div>
-    <h2>How it works</h2>
-    <p class="section-sub">Three Python modules wired together to simulate a real automotive audio pipeline.</p>
-  </div>
-
-  <div class="arch-grid">
-    <div class="arch-card">
-      <div class="arch-card-accent" style="background:var(--secondary)"></div>
-      <div class="arch-card-icon">🔀</div>
-      <h3>router.py</h3>
-      <p>The AudioRouter cycles through music → nav → call modes on a frame counter, returning (wm, wn, wc) weights for each mode.</p>
-      <code>get_weights() → (wm, wn, wc)</code>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-accent" style="background:var(--music-color)"></div>
-      <div class="arch-card-icon">🎚️</div>
-      <h3>mixer.py</h3>
-      <p>Converts PCM bytes to float32 arrays, applies per-stream weights, normalizes gain to prevent clipping, then converts back to PCM.</p>
-      <code>mix3(music, nav, call, wm, wn, wc)</code>
-    </div>
-    <div class="arch-card">
-      <div class="arch-card-accent" style="background:var(--primary)"></div>
-      <div class="arch-card-icon">🔊</div>
-      <h3>hal.py</h3>
-      <p>Hardware Abstraction Layer wraps PyAudio to open a 16-bit stereo output stream, isolating hardware details from the mixing logic.</p>
-      <code>open_stream(rate, channels)</code>
+    <div class="card">
+      <h4>🧱 Teaches layered architecture</h4>
+      <p>HAL → Router → Mixer → Output. Each layer has a single responsibility. The same pattern appears in every production audio stack (Android, QNX, Linux ALSA).</p>
     </div>
   </div>
 
-  <!-- FLOW DIAGRAM -->
+  <h2>Architecture at a glance</h2>
   <div class="flow">
     <div class="flow-col">
       <div class="flow-box music">🎵 music.wav</div>
@@ -701,270 +221,1099 @@
       <div class="flow-box call">📞 call.wav</div>
     </div>
     <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-box" style="border-color:var(--secondary);color:var(--secondary)">router.py</div>
-      <div class="flow-sub">weights (wm, wn, wc)</div>
+    <div style="text-align:center">
+      <div class="flow-box dark">hal.py<br><small style="font-weight:400;font-size:.7rem">PCM frames</small></div>
     </div>
     <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-box mixer">mixer.py</div>
-      <div class="flow-sub">PCM → float → PCM</div>
+    <div style="text-align:center">
+      <div class="flow-box" style="border-color:#f59e0b;color:#b45309">router.py<br><small style="font-weight:400;font-size:.7rem">weights (wm,wn,wc)</small></div>
     </div>
     <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-box hal">hal.py</div>
-      <div class="flow-sub">PyAudio output</div>
+    <div style="text-align:center">
+      <div class="flow-box indigo">mixer.py<br><small style="font-weight:400;font-size:.7rem">int16→float→int16</small></div>
     </div>
     <div class="flow-arrow">→</div>
-    <div class="flow-node">
-      <div class="flow-box" style="border-color:#22c55e;color:#22c55e">🔈 Speakers</div>
-      <div class="flow-sub">16-bit stereo PCM</div>
+    <div style="text-align:center">
+      <div class="flow-box dark">hal.py / PyAudio<br><small style="font-weight:400;font-size:.7rem">PCM output</small></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div style="text-align:center">
+      <div class="flow-box" style="border-color:#22c55e;color:#15803d">🔈 Speakers</div>
     </div>
   </div>
-</section>
 
-<hr class="divider" />
-
-<!-- PRIORITY TABLE -->
-<section>
-  <div class="section-header">
-    <div class="section-tag">Priority rules</div>
-    <h2>Audio priority hierarchy</h2>
-    <p class="section-sub">The router enforces strict priorities: incoming calls mute everything, navigation ducks music.</p>
+  <h2>Live Demo — Router Simulation</h2>
+  <div class="demo-card">
+    <div class="mode-btns">
+      <button class="mode-btn active-music" onclick="demoSetMode('music',this)">🎵 Music</button>
+      <button class="mode-btn" onclick="demoSetMode('nav',this)">🗺️ Navigation</button>
+      <button class="mode-btn" onclick="demoSetMode('call',this)">📞 Call</button>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="section-label" style="margin-bottom:12px">Mixer weights</div>
+        <div class="weights">
+          <div class="w-row">
+            <div class="w-label" style="color:var(--music)">🎵 Music</div>
+            <div class="w-bg"><div class="w-fill" id="wm" style="background:var(--music);width:100%"></div></div>
+            <div class="w-val" id="wm-v">1.0</div>
+          </div>
+          <div class="w-row">
+            <div class="w-label" style="color:#b45309">🗺️ Nav</div>
+            <div class="w-bg"><div class="w-fill" id="wn" style="background:var(--nav);width:0%"></div></div>
+            <div class="w-val" id="wn-v">0.0</div>
+          </div>
+          <div class="w-row">
+            <div class="w-label" style="color:var(--call)">📞 Call</div>
+            <div class="w-bg"><div class="w-fill" id="wc" style="background:var(--call);width:0%"></div></div>
+            <div class="w-val" id="wc-v">0.0</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-md);font-size:.82rem;color:var(--muted)" id="demo-status">
+          🎵 Music playing at full volume. Nav and call muted.
+        </div>
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:8px">Mixed output waveform</div>
+        <canvas id="viz"></canvas>
+      </div>
+    </div>
   </div>
-  <div style="border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;">
-    <table class="priority-table">
-      <thead>
-        <tr>
-          <th>Mode</th>
-          <th>Music weight</th>
-          <th>Nav weight</th>
-          <th>Call weight</th>
-          <th>Music audible</th>
-          <th>Nav audible</th>
-          <th>Call audible</th>
-        </tr>
-      </thead>
+
+  <h2>Priority Rules</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Mode</th><th>wm (music)</th><th>wn (nav)</th><th>wc (call)</th><th>Behaviour</th></tr></thead>
       <tbody>
         <tr>
-          <td><span class="pill pill-music">🎵 Music</span></td>
-          <td><code style="font-family:monospace">1.0</code></td>
-          <td><code style="font-family:monospace">0.0</code></td>
-          <td><code style="font-family:monospace">0.0</code></td>
-          <td><span class="pill pill-high">Yes</span></td>
-          <td><span class="pill pill-low">No</span></td>
-          <td><span class="pill pill-low">No</span></td>
+          <td><span class="tag tag-purple">🎵 music</span></td>
+          <td><code>1.0</code></td><td><code>0.0</code></td><td><code>0.0</code></td>
+          <td>Music at full volume. Default state.</td>
         </tr>
         <tr>
-          <td><span class="pill pill-nav">🗺️ Navigation</span></td>
-          <td><code style="font-family:monospace">0.3</code></td>
-          <td><code style="font-family:monospace">1.0</code></td>
-          <td><code style="font-family:monospace">0.0</code></td>
-          <td><span class="pill pill-nav">Ducked</span></td>
-          <td><span class="pill pill-high">Yes</span></td>
-          <td><span class="pill pill-low">No</span></td>
+          <td><span class="tag tag-yellow">🗺️ nav</span></td>
+          <td><code>0.3</code></td><td><code>1.0</code></td><td><code>0.0</code></td>
+          <td>Navigation at full; music <em>ducked</em> to 30%. Call silent.</td>
         </tr>
         <tr>
-          <td><span class="pill pill-call">📞 Call</span></td>
-          <td><code style="font-family:monospace">0.0</code></td>
-          <td><code style="font-family:monospace">0.0</code></td>
-          <td><code style="font-family:monospace">1.0</code></td>
-          <td><span class="pill pill-low">No</span></td>
-          <td><span class="pill pill-low">No</span></td>
-          <td><span class="pill pill-high">Yes</span></td>
+          <td><span class="tag tag-red">📞 call</span></td>
+          <td><code>0.0</code></td><td><code>0.0</code></td><td><code>1.0</code></td>
+          <td>Only call audible. Music &amp; nav fully muted.</td>
         </tr>
       </tbody>
     </table>
   </div>
-</section>
 
-<hr class="divider" />
-
-<!-- CODE -->
-<section>
-  <div class="section-header">
-    <div class="section-tag">Source</div>
-    <h2>Core mixing logic</h2>
-    <p class="section-sub">Working in float32 prevents integer overflow during mixing, then clips back to int16 for PCM output.</p>
+  <h2>Frame timeline (router.update_mode)</h2>
+  <div class="card">
+    <div style="display:flex;align-items:stretch;gap:4px;height:48px;border-radius:var(--r-md);overflow:hidden;font-size:.7rem;font-weight:600">
+      <div style="flex:50;background:#eef2ff;color:var(--secondary);display:flex;align-items:center;justify-content:center">music (0–49)</div>
+      <div style="flex:100;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center">nav (50–149)</div>
+      <div style="flex:50;background:#f9fafb;color:var(--muted);display:flex;align-items:center;justify-content:center">music (150–199)</div>
+      <div style="flex:150;background:#fee2e2;color:var(--call);display:flex;align-items:center;justify-content:center">call (200–349)</div>
+      <div style="flex:650;background:#f9fafb;color:var(--muted);display:flex;align-items:center;justify-content:center">music (350–999)</div>
+    </div>
+    <p style="margin-top:8px;font-size:.8rem">Out of 1000 total loop iterations. Frames are 1024-sample chunks at the configured sample rate.</p>
   </div>
-  <div class="code-block"><span class="cm"># mixer.py — weighted mix of three PCM streams</span>
-<span class="kw">import</span> numpy <span class="kw">as</span> np
 
-CHUNK = <span class="num">1024</span>
+  <h2>Dependencies</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Package</th><th>Version</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td><code>numpy</code></td><td>2.4.4</td><td>Vectorised float32 arithmetic for PCM mixing; prevents integer overflow</td></tr>
+        <tr><td><code>PyAudio</code></td><td>0.2.14</td><td>Wraps PortAudio to open system audio output stream (or ALSA on Linux)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-<span class="kw">def</span> <span class="fn">mix3</span>(music_bytes, nav_bytes, call_bytes, wm, wn, wc):
-    m = np.frombuffer(music_bytes, dtype=np.int16).astype(np.float32)
-    n = np.frombuffer(nav_bytes,  dtype=np.int16).astype(np.float32)
-    c = np.frombuffer(call_bytes, dtype=np.int16).astype(np.float32)
+<!-- ═══════════════════════════════════════
+     TAB 2 — FILE REFERENCE
+════════════════════════════════════════ -->
+<div class="page" id="tab-filereference">
 
-    L = min(len(m), len(n), len(c))
-    m, n, c = m[:L], n[:L], c[:L]
+  <h1>File Reference</h1>
+  <p>Complete symbol-level documentation for every file. Covers constants, types, functions, loops, and control flow.</p>
 
-    mixed = wm * m + wn * n + wc * c
+  <!-- hal.py -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>hal.py — Hardware Abstraction Layer</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Class</span>
+    </div>
+    <div class="file-body">
+      <p><strong>Purpose:</strong> Wraps a WAV file and exposes it as a hardware audio source. Guarantees that every <code>read()</code> call returns exactly the requested number of bytes — it loops and pads with silence when the file ends. This is how real audio HALs behave: the downstream pipeline must never receive a short buffer.</p>
 
-    <span class="cm"># Normalize if total gain &gt; 1 to prevent overflow</span>
+      <h4>Imports</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Import</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>import wave</code></td><td>Standard library — opens .wav files and reads their PCM data + metadata (channels, sample rate, sample width)</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Class: <code>AudioHAL</code></h4>
+      <div class="symbol">
+        <div class="symbol-sig">class AudioHAL</div>
+        <div class="symbol-desc">Abstracts a WAV file behind a hardware-neutral read interface. Caller never touches the file object directly.</div>
+      </div>
+
+      <h4>Constructor</h4>
+      <div class="symbol">
+        <div class="symbol-sig">def __init__(self, filepath: str)</div>
+        <div class="symbol-desc">Opens the WAV file with <code>wave.open(filepath, 'rb')</code>. Stores the file handle as <code>self._wf</code>. No audio data is read yet.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">__init__</span>(self, filepath):
+    self._wf = wave.open(filepath, <span class="str">'rb'</span>)   <span class="cm"># 'rb' = read binary</span></pre>
+
+      <h4>Methods</h4>
+      <div class="symbol">
+        <div class="symbol-sig">def get_params(self) → tuple(nchannels, sampwidth, framerate)</div>
+        <div class="symbol-desc">Returns the WAV file's audio parameters. Used by <code>main.py</code> to configure the PyAudio output stream to match the source format.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">get_params</span>(self):
+    <span class="kw">return</span> (
+        self._wf.getnchannels(),  <span class="cm"># int — 1=mono, 2=stereo</span>
+        self._wf.getsampwidth(), <span class="cm"># int — bytes per sample (2 = 16-bit)</span>
+        self._wf.getframerate()  <span class="cm"># int — samples per second, e.g. 44100</span>
+    )</pre>
+
+      <div class="symbol">
+        <div class="symbol-sig">def read(self, nframes: int) → bytes</div>
+        <div class="symbol-desc">Core method. Reads <code>nframes</code> PCM frames. If the file is exhausted, seeks back to frame 0 (looping) and continues reading. Pads with <code>\x00</code> bytes (digital silence) if even looping can't fill the buffer.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">read</span>(self, nframes):
+    channels, sampwidth, _ = self.<span class="fn">get_params</span>()
+    expected = nframes * channels * sampwidth  <span class="cm"># total bytes required</span>
+    data = <span class="str">b''</span>
+    max_loops = <span class="num">5</span>  <span class="cm"># CONSTANT — safety guard against infinite loop</span>
+
+    <span class="cm"># ── LOOP: keep reading until buffer is full ──</span>
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(max_loops):
+        chunk = self._wf.<span class="fn">readframes</span>(nframes)
+        data += chunk
+        <span class="kw">if</span> <span class="fn">len</span>(data) &gt;= expected:
+            <span class="kw">break</span>
+        self._wf.<span class="fn">rewind</span>()  <span class="cm"># seek to frame 0 on EOF</span>
+
+    <span class="cm"># ── PADDING: silence-pad if still short ──</span>
+    <span class="kw">if</span> <span class="fn">len</span>(data) &lt; expected:
+        data += <span class="str">b'\x00'</span> * (expected - <span class="fn">len</span>(data))
+
+    <span class="kw">return</span> data[:expected]  <span class="cm"># trim to exact size</span></pre>
+
+      <h4>Key Constants (inside read)</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Name</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>max_loops</code></td><td>5</td><td>Maximum rewind attempts before giving up and padding. Prevents infinite loop on a corrupt or zero-length WAV.</td></tr>
+          <tr><td><code>expected</code></td><td>nframes × channels × sampwidth</td><td>The exact byte count the caller expects. Buffer contract.</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout tip">
+        <div class="callout-title">💡 Why silence padding?</div>
+        <p>Audio hardware DMA (Direct Memory Access) fills a ring buffer in fixed-size slots. If you hand it a short buffer it can either crash, glitch, or block. Padding with <code>\x00</code> = <strong>digital silence</strong> (int16 value 0) is safe and industry standard.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- mixer.py -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>mixer.py — PCM Audio Mixer</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Functions + Constant</span>
+    </div>
+    <div class="file-body">
+      <p><strong>Purpose:</strong> Takes three PCM byte streams and a set of weights, mixes them in floating-point space to avoid integer overflow, normalises the gain, clips, then returns the result as int16 PCM bytes.</p>
+
+      <h4>Imports</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Import</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>import numpy as np</code></td><td>Vectorised float32 operations on the entire buffer at once — far faster than a Python for-loop over 1024 samples</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Module-level Constant</h4>
+      <div class="symbol">
+        <div class="symbol-sig">CHUNK: int = 1024</div>
+        <div class="symbol-desc">Number of audio frames processed per cycle. Determines latency: smaller = lower latency, higher CPU cost. 1024 frames at 44100 Hz = ~23 ms per chunk. Mirrors ALSA's period size concept.</div>
+      </div>
+
+      <h4>Functions</h4>
+      <div class="symbol">
+        <div class="symbol-sig">def to_array(data: bytes, channels: int = 1, sampwidth: int = 2) → np.ndarray</div>
+        <div class="symbol-desc">Converts raw PCM bytes into a NumPy integer array. Selects <code>np.int16</code> for 2-byte samples (16-bit), <code>np.int32</code> for 4-byte (32-bit). Used internally by <code>mix3</code>.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">to_array</span>(data, channels=<span class="num">1</span>, sampwidth=<span class="num">2</span>):
+    dtype = np.int16 <span class="kw">if</span> sampwidth == <span class="num">2</span> <span class="kw">else</span> np.int32
+    <span class="kw">return</span> np.<span class="fn">frombuffer</span>(data, dtype=dtype)
+    <span class="cm"># np.frombuffer — zero-copy view into the bytes object</span></pre>
+
+      <div class="symbol">
+        <div class="symbol-sig">def mix3(m, n, c, wm, wn, wc, channels=1, sampwidth=2) → bytes</div>
+        <div class="symbol-desc">The core mixer. Converts three PCM byte streams to float32 arrays, applies weights, normalises if total gain &gt; 1, clips to int16 range, returns bytes.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">mix3</span>(m, n, c, wm, wn, wc, channels=<span class="num">1</span>, sampwidth=<span class="num">2</span>):
+
+    <span class="cm"># ── STEP 1: bytes → float32 arrays ──</span>
+    a1 = <span class="fn">to_array</span>(m, channels, sampwidth).<span class="fn">astype</span>(np.float32)
+    a2 = <span class="fn">to_array</span>(n, channels, sampwidth).<span class="fn">astype</span>(np.float32)
+    a3 = <span class="fn">to_array</span>(c, channels, sampwidth).<span class="fn">astype</span>(np.float32)
+
+    <span class="cm"># ── STEP 2: align to shortest (critical safety fix) ──</span>
+    min_len = <span class="fn">min</span>(<span class="fn">len</span>(a1), <span class="fn">len</span>(a2), <span class="fn">len</span>(a3))
+    a1, a2, a3 = a1[:min_len], a2[:min_len], a3[:min_len]
+
+    <span class="cm"># ── STEP 3: weighted sum ──</span>
+    out = a1 * wm + a2 * wn + a3 * wc
+
+    <span class="cm"># ── STEP 4: normalise gain ──</span>
     total = wm + wn + wc
     <span class="kw">if</span> total &gt; <span class="num">1.0</span>:
-        mixed /= total
+        out = out / total       <span class="cm"># prevent amplification above full scale</span>
 
-    <span class="cm"># Clip to int16 range and convert back to PCM</span>
-    mixed = np.clip(mixed, <span class="num">-32768</span>, <span class="num">32767</span>).astype(np.int16)
-    <span class="kw">return</span> mixed.tobytes()</div>
-</section>
+    <span class="cm"># ── STEP 5: clip + convert back to int16 bytes ──</span>
+    out = np.<span class="fn">clip</span>(out, <span class="num">-32768</span>, <span class="num">32767</span>)
+    <span class="kw">return</span> out.<span class="fn">astype</span>(np.int16).<span class="fn">tobytes</span>()</pre>
 
-<hr class="divider" />
+      <h4>Type Reference</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Range</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>m, n, c</code></td><td><code>bytes</code></td><td>—</td><td>Raw PCM bytes for music, nav, call streams</td></tr>
+          <tr><td><code>wm, wn, wc</code></td><td><code>float</code></td><td>0.0 – 1.0</td><td>Volume weight per stream</td></tr>
+          <tr><td><code>channels</code></td><td><code>int</code></td><td>1 or 2</td><td>Mono or stereo</td></tr>
+          <tr><td><code>sampwidth</code></td><td><code>int</code></td><td>2 or 4</td><td>Bytes per sample (2 = 16-bit)</td></tr>
+          <tr><td>return</td><td><code>bytes</code></td><td>—</td><td>Mixed PCM, same length as shortest input</td></tr>
+        </tbody>
+      </table></div>
 
-<!-- FOOTER -->
-<footer>
-  <p>Built from <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank">adarsh07ronal/audiostackSample</a> · Python · PyAudio · NumPy</p>
-</footer>
+      <div class="callout">
+        <div class="callout-title">🔥 Why float32?</div>
+        <p>int16 max is 32767. If you add two int16 samples at full scale: 32767 + 32767 = 65534 — this overflows an int16 and wraps to −2 (catastrophic distortion). float32 has a 32-bit mantissa so intermediate values stay accurate. You only clip back to int16 at the very end.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- router.py -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>router.py — Audio Router</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Class + State Machine</span>
+    </div>
+    <div class="file-body">
+      <p><strong>Purpose:</strong> Maintains the current audio mode (music / nav / call) and returns the correct mixing weights for each frame. Simulates what Android AudioFocus / AAOS audio policy does: grant or deny focus to each audio stream based on priority.</p>
+
+      <h4>Class: <code>AudioRouter</code></h4>
+      <div class="symbol">
+        <div class="symbol-sig">class AudioRouter</div>
+        <div class="symbol-desc">A finite state machine with 3 states: "music", "nav", "call". State transitions are driven by a frame counter.</div>
+      </div>
+
+      <div class="symbol">
+        <div class="symbol-sig">def __init__(self)</div>
+        <div class="symbol-desc">Sets <code>self.mode = "music"</code>. The default state — music plays until an event triggers a transition.</div>
+      </div>
+
+      <div class="symbol">
+        <div class="symbol-sig">def update_mode(self, frame_idx: int) → None</div>
+        <div class="symbol-desc">State transition function. Uses integer range checks on <code>frame_idx</code> to simulate timed audio events. Mutates <code>self.mode</code>.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">update_mode</span>(self, i):
+    <span class="cm"># ── CONDITIONAL: frame-based state machine ──</span>
+    <span class="kw">if</span>   <span class="num">50</span>  &lt;= i &lt; <span class="num">150</span>:  self.mode = <span class="str">"nav"</span>
+    <span class="kw">elif</span> <span class="num">200</span> &lt;= i &lt; <span class="num">350</span>:  self.mode = <span class="str">"call"</span>
+    <span class="kw">else</span>:                  self.mode = <span class="str">"music"</span></pre>
+
+      <div class="symbol">
+        <div class="symbol-sig">def get_weights(self) → tuple[float, float, float]</div>
+        <div class="symbol-desc">Maps current mode to mixer weights. Returns <code>(wm, wn, wc)</code>. This is the <strong>Strategy</strong> pattern — the behaviour (weights) changes based on the current mode without any <code>if/else</code> in the caller.</div>
+      </div>
+      <pre><span class="kw">def</span> <span class="fn">get_weights</span>(self):
+    <span class="kw">if</span>   self.mode == <span class="str">"call"</span>:  <span class="kw">return</span> (<span class="num">0.0</span>, <span class="num">0.0</span>, <span class="num">1.0</span>)
+    <span class="kw">elif</span> self.mode == <span class="str">"nav"</span>:   <span class="kw">return</span> (<span class="num">0.3</span>, <span class="num">1.0</span>, <span class="num">0.0</span>)
+    <span class="kw">else</span>:                       <span class="kw">return</span> (<span class="num">1.0</span>, <span class="num">0.0</span>, <span class="num">0.0</span>)
+    <span class="cm"># call &gt; nav &gt; music  (priority hierarchy)</span></pre>
+
+      <h4>State Machine Diagram</h4>
+      <div class="flow" style="justify-content:center">
+        <div class="flow-box music">music<br><small>wm=1.0</small></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.7rem;color:var(--muted)">
+          <span>frame 50 →</span>
+          <span style="color:#9ca3af">⇄</span>
+          <span>← frame 150</span>
+        </div>
+        <div class="flow-box nav">nav<br><small>wm=0.3 wn=1.0</small></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.7rem;color:var(--muted)">
+          <span>frame 200 →</span>
+          <span style="color:#9ca3af">⇄</span>
+          <span>← frame 350</span>
+        </div>
+        <div class="flow-box call">call<br><small>wc=1.0</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main.py -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>main.py — Entry Point (PyAudio)</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Main loop</span>
+    </div>
+    <div class="file-body">
+      <p><strong>Purpose:</strong> Wires all modules together. Opens PyAudio output, runs 1000 iterations of the mixing loop, handles cleanup. This is the <strong>main event loop</strong> — analogous to Android's <code>AudioFlinger</code> mixing thread.</p>
+
+      <h4>Imports</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Import</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><code>import pyaudio</code></td><td>Opens system audio output stream (PortAudio backend)</td></tr>
+          <tr><td><code>from hal import AudioHAL</code></td><td>WAV-file hardware abstraction</td></tr>
+          <tr><td><code>from mixer import mix3, CHUNK</code></td><td>Weighted PCM mixer + buffer size constant</td></tr>
+          <tr><td><code>from router import AudioRouter</code></td><td>Priority-based mode/weight manager</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Constants (runtime)</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Name</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>CHUNK</code></td><td>1024 (from mixer.py)</td><td>Frames per iteration</td></tr>
+          <tr><td><code>channels</code></td><td>from music HAL</td><td>Audio channel count (1 or 2)</td></tr>
+          <tr><td><code>sampwidth</code></td><td>from music HAL (2)</td><td>2 bytes = 16-bit samples</td></tr>
+          <tr><td><code>rate</code></td><td>from music HAL (e.g. 16000)</td><td>Sample rate in Hz</td></tr>
+          <tr><td><code>EXPECTED</code></td><td>CHUNK × channels × sampwidth</td><td>Required output bytes per chunk</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>Main loop</h4>
+      <pre><span class="cm"># ── SETUP ──────────────────────────────────────</span>
+music_hal = <span class="cl">AudioHAL</span>(<span class="str">'streams/music_16.wav'</span>)
+nav_hal   = <span class="cl">AudioHAL</span>(<span class="str">'streams/nav_16.wav'</span>)
+call_hal  = <span class="cl">AudioHAL</span>(<span class="str">'streams/call_16.wav'</span>)
+router    = <span class="cl">AudioRouter</span>()
+pa        = pyaudio.<span class="cl">PyAudio</span>()
+
+channels, sampwidth, rate = music_hal.<span class="fn">get_params</span>()
+EXPECTED = CHUNK * channels * sampwidth
+
+stream = pa.<span class="fn">open</span>(
+    format=pa.<span class="fn">get_format_from_width</span>(sampwidth),
+    channels=channels, rate=rate, output=<span class="kw">True</span>
+)
+
+<span class="cm"># ── MAIN LOOP: 1000 iterations ─────────────────</span>
+<span class="kw">try</span>:
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1000</span>):
+        <span class="cm"># 1. Read CHUNK frames from each HAL</span>
+        m = music_hal.<span class="fn">read</span>(CHUNK)
+        n = nav_hal.<span class="fn">read</span>(CHUNK)
+        c = call_hal.<span class="fn">read</span>(CHUNK)
+
+        <span class="cm"># 2. Update router state (state machine tick)</span>
+        router.<span class="fn">update_mode</span>(i)
+        wm, wn, wc = router.<span class="fn">get_weights</span>()
+
+        <span class="cm"># 3. Mix three streams into one</span>
+        out = <span class="fn">mix3</span>(m, n, c, wm, wn, wc, channels, sampwidth)
+
+        <span class="cm"># 4. Safety: enforce exact buffer size</span>
+        <span class="kw">if</span> <span class="fn">len</span>(out) != EXPECTED:
+            <span class="kw">if</span> <span class="fn">len</span>(out) &lt; EXPECTED:
+                out += <span class="str">b'\x00'</span> * (EXPECTED - <span class="fn">len</span>(out))
+            <span class="kw">else</span>:
+                out = out[:EXPECTED]
+
+        <span class="cm"># 5. Write to audio device</span>
+        stream.<span class="fn">write</span>(out)
+
+<span class="kw">finally</span>:
+    stream.<span class="fn">stop_stream</span>()
+    stream.<span class="fn">close</span>()
+    pa.<span class="fn">terminate</span>()</pre>
+
+      <div class="callout warn">
+        <div class="callout-title">⚠️ try/finally resource management</div>
+        <p>PyAudio opens a system resource (audio device). If the loop throws (e.g. KeyboardInterrupt), <code>finally</code> ensures the stream is always closed. Leaking a PyAudio instance can lock the audio device on some systems.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- main_alsa.py -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>main_alsa.py — ALSA Variant</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Linux-specific</span>
+    </div>
+    <div class="file-body">
+      <p><strong>Purpose:</strong> Same pipeline as <code>main.py</code> but targets the ALSA PCM API directly (Linux). Uses a 4096-byte chunk instead of frame-count-based reads, and configures the ALSA device with explicit format (S16_LE), period size, and buffer size.</p>
+
+      <h4>Key Differences vs main.py</h4>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Aspect</th><th>main.py</th><th>main_alsa.py</th></tr></thead>
+        <tbody>
+          <tr><td>Audio API</td><td>PyAudio / PortAudio</td><td>alsaaudio (ALSA directly)</td></tr>
+          <tr><td>Chunk size</td><td>1024 frames</td><td>4096 bytes</td></tr>
+          <tr><td>Platform</td><td>Cross-platform</td><td>Linux only</td></tr>
+          <tr><td>PCM format</td><td>Detected from WAV</td><td>Explicitly <code>S16_LE</code></td></tr>
+          <tr><td>Timing</td><td>Implicit (PyAudio blocks)</td><td>Optional <code>time.sleep()</code> pacing</td></tr>
+          <tr><td>Status prints</td><td>None</td><td>Every 100 iterations</td></tr>
+        </tbody>
+      </table></div>
+
+      <div class="callout">
+        <div class="callout-title">ℹ️ S16_LE</div>
+        <p>Signed 16-bit Little-Endian PCM. The standard format for audio on x86 Linux systems. Little-endian means the least significant byte comes first in memory — matching x86 native byte order, so no byte-swapping overhead.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- requirements.txt -->
+  <div class="file-block">
+    <div class="file-header">
+      <span>📄</span>
+      <h3>requirements.txt</h3>
+      <span class="tag tag-gray" style="margin-left:auto">Dependencies</span>
+    </div>
+    <div class="file-body">
+      <pre><span class="str">numpy</span>==<span class="num">2.4.4</span>
+<span class="str">PyAudio</span>==<span class="num">0.2.14</span></pre>
+      <p>Install with: <code>pip install -r requirements.txt</code></p>
+      <p>On macOS you may need: <code>brew install portaudio</code> before pip-installing PyAudio, since it wraps the native PortAudio C library.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 3 — CONCEPTS & PATTERNS
+════════════════════════════════════════ -->
+<div class="page" id="tab-concepts">
+
+  <h1>Concepts &amp; Design Patterns</h1>
+  <p>Every pattern used in this codebase maps directly to patterns used in production automotive audio stacks.</p>
+
+  <div class="grid-2">
+
+    <div class="card card-accent">
+      <h3>🏗️ Hardware Abstraction Layer (HAL)</h3>
+      <span class="tag tag-purple">Structural</span>
+      <p style="margin-top:8px">The <code>AudioHAL</code> class hides the fact that audio comes from a WAV file. The caller (main.py) only calls <code>hal.read(n)</code> and <code>hal.get_params()</code> — it doesn't know or care whether the source is a file, a microphone, Bluetooth, or a network stream.</p>
+      <p><strong>In production:</strong> Android defines <code>IStreamIn</code> and <code>IStreamOut</code> HAL interfaces. Every audio chip vendor (Qualcomm, MediaTek) implements these. The AudioFlinger mixer never touches hardware directly.</p>
+      <div class="analogy">
+        <div class="analogy-label">Analogy</div>
+        <p style="color:#4c1d95;margin:0">Like a USB port — your laptop doesn't care if a mouse, keyboard, or hard drive is plugged in. The USB protocol (HAL interface) is fixed; the device behind it varies.</p>
+      </div>
+    </div>
+
+    <div class="card card-accent">
+      <h3>🎯 Strategy Pattern</h3>
+      <span class="tag tag-purple">Behavioural</span>
+      <p style="margin-top:8px"><code>AudioRouter.get_weights()</code> returns different weight tuples based on <code>self.mode</code>. The mixer (<code>mix3</code>) doesn't contain any mode logic — it just uses whatever weights it receives. The strategy (weight policy) is decoupled from the execution (mixing).</p>
+      <p><strong>In production:</strong> Android AudioPolicyManager uses a similar strategy: it evaluates usage, content type, and flags to produce a routing decision, then hands it to AudioFlinger.</p>
+      <div class="analogy">
+        <div class="analogy-label">Analogy</div>
+        <p style="color:#4c1d95;margin:0">Like a GPS giving directions — your car just follows the turn instructions. The car doesn't know if the GPS is routing around traffic, taking the scenic route, or avoiding toll roads.</p>
+      </div>
+    </div>
+
+    <div class="card card-accent">
+      <h3>🔄 Finite State Machine</h3>
+      <span class="tag tag-purple">Behavioural</span>
+      <p style="margin-top:8px"><code>update_mode(i)</code> is a classic FSM: it has a set of states (music, nav, call) and a transition function driven by the frame index. Only one state is active at a time.</p>
+      <pre><span class="cm"># FSM transition table</span>
+i &lt; 50       → music
+50 ≤ i &lt; 150  → nav
+150 ≤ i &lt; 200 → music
+200 ≤ i &lt; 350 → call
+i ≥ 350       → music</pre>
+      <p><strong>In production:</strong> Android AudioFocus is an FSM. Transitions: GAIN → LOSS → LOSS_TRANSIENT → LOSS_TRANSIENT_CAN_DUCK → GAIN.</p>
+    </div>
+
+    <div class="card card-accent">
+      <h3>📦 Layered Architecture</h3>
+      <span class="tag tag-purple">Structural</span>
+      <p style="margin-top:8px">Each layer only communicates with the layer directly above or below it:</p>
+      <ul>
+        <li><strong>hal.py</strong> — reads hardware (or file)</li>
+        <li><strong>router.py</strong> — decides policy</li>
+        <li><strong>mixer.py</strong> — executes math</li>
+        <li><strong>main.py</strong> — orchestrates</li>
+      </ul>
+      <p>This is the <strong>OSI model</strong> applied to audio. Swap any layer without touching the others.</p>
+    </div>
+
+    <div class="card card-accent">
+      <h3>🔒 Buffer Contract / Invariant</h3>
+      <span class="tag tag-green">Safety</span>
+      <p style="margin-top:8px">Both <code>hal.py</code> and <code>main.py</code> enforce that every buffer is exactly <code>CHUNK × channels × sampwidth</code> bytes. This is a <strong>class invariant</strong> — a guarantee that must hold at every call boundary.</p>
+      <p><strong>Why:</strong> Audio hardware uses ring buffers. If you write fewer bytes than the hardware period size, you'll get an underrun (glitch). If you write more, you'll overwrite the next period.</p>
+      <div class="analogy">
+        <div class="analogy-label">Analogy</div>
+        <p style="color:#4c1d95;margin:0">Like ATM cash cassettes — they hold exactly 100 notes. Whether it's dollars or blanks (silence), the cassette must be full before the machine will accept it.</p>
+      </div>
+    </div>
+
+    <div class="card card-accent">
+      <h3>🌊 Floating-Point Domain Mixing</h3>
+      <span class="tag tag-green">Signal Processing</span>
+      <p style="margin-top:8px">Converting int16 → float32 before arithmetic, then clipping back to int16 at the end is called <strong>fixed-to-float-to-fixed</strong> conversion. It prevents integer overflow during intermediate calculations.</p>
+      <p><strong>In production:</strong> Android AudioFlinger internally operates in 32-bit or 64-bit float. Hardware output is only quantised to int16/int24 at the very last stage (the HAL write call).</p>
+    </div>
+
+    <div class="card card-accent">
+      <h3>🎚️ Audio Ducking</h3>
+      <span class="tag tag-yellow">Domain</span>
+      <p style="margin-top:8px">Reducing a stream's volume (not muting) to make room for another. In <code>nav</code> mode: <code>wm = 0.3</code> (music at 30%) while <code>wn = 1.0</code> (nav at full). The user can still hear music faintly.</p>
+      <p><strong>In production:</strong> <code>AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK</code> — apps should lower volume but keep playing. Used for navigation prompts, notifications, and turn-by-turn.</p>
+    </div>
+
+    <div class="card card-accent">
+      <h3>♻️ RAII / try-finally</h3>
+      <span class="tag tag-green">Safety</span>
+      <p style="margin-top:8px">The PyAudio stream is opened before the loop and closed in a <code>finally</code> block. This is RAII (Resource Acquisition Is Initialization) — the resource lifetime matches the code block, not an arbitrary point where cleanup might be forgotten.</p>
+      <p><strong>Equivalent patterns:</strong> Python's <code>with</code> statement, C++ destructors, Java try-with-resources, Rust's <code>Drop</code> trait.</p>
+    </div>
+
+  </div>
+
+  <hr class="divider"/>
+  <h2>Data Flow: int16 → float32 → int16</h2>
+  <div class="flow">
+    <div class="flow-box dark">WAV bytes<br><small>b'\xff\x7f...'</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="border-color:#818cf8;color:#818cf8">np.frombuffer<br><small>int16 array</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="border-color:#34d399;color:#15803d">astype(float32)<br><small>[-32768..32767]</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box indigo">weighted sum<br><small>a1*wm+a2*wn+a3*wc</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="border-color:#f59e0b;color:#b45309">np.clip<br><small>[-32768..32767]</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box dark">astype(int16)<br>.tobytes()</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box" style="border-color:#22c55e;color:#15803d">stream.write()</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 4 — AUTOMOTIVE STACK
+════════════════════════════════════════ -->
+<div class="page" id="tab-audiostack">
+
+  <h1>Automotive Audio Stack</h1>
+  <p>How a real in-vehicle infotainment (IVI) system manages audio — from the Android application layer down to silicon.</p>
+
+  <h2>Full Stack Layers</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>Layer</th><th>Component</th><th>This project's equivalent</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Applications</td><td>Music app, Nav app, Phone app</td><td>The three WAV stream sources</td></tr>
+      <tr><td>2</td><td>Audio Framework</td><td>Android AudioManager / AudioTrack</td><td><code>main.py</code> — orchestrates everything</td></tr>
+      <tr><td>3</td><td>Audio Policy</td><td>AudioPolicyManager</td><td><code>router.py</code> — decides who gets focus</td></tr>
+      <tr><td>4</td><td>Audio Server</td><td>AudioFlinger (mixing thread)</td><td><code>mixer.py</code> — mixes PCM streams</td></tr>
+      <tr><td>5</td><td>HAL Interface</td><td>Android Audio HAL (HIDL/AIDL)</td><td><code>hal.py</code> — abstracts the source</td></tr>
+      <tr><td>6</td><td>Driver</td><td>ALSA driver / SoC audio driver</td><td><code>main_alsa.py</code> (ALSA directly)</td></tr>
+      <tr><td>7</td><td>Hardware</td><td>DSP, Codec chip (e.g. WCD938x)</td><td>PyAudio / ALSA PCM device</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Android AudioFocus States</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Focus State</th><th>Meaning</th><th>This project equivalent</th></tr></thead>
+    <tbody>
+      <tr><td><code>AUDIOFOCUS_GAIN</code></td><td>App has full focus, play normally</td><td><code>wm = 1.0</code> (music mode)</td></tr>
+      <tr><td><code>AUDIOFOCUS_LOSS</code></td><td>Permanent loss — stop and release</td><td><code>wm = 0.0</code> in call mode</td></tr>
+      <tr><td><code>AUDIOFOCUS_LOSS_TRANSIENT</code></td><td>Temporary loss — pause</td><td>Nav mode: <code>wm = 0.0</code> option</td></tr>
+      <tr><td><code>AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK</code></td><td>Lower volume, keep playing</td><td>Nav mode: <code>wm = 0.3</code> (ducking)</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>AAOS (Android Automotive OS) Audio</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Audio Usage Types</h3>
+      <p>AAOS extends Android with automotive-specific audio usages in <code>AudioAttributes</code>:</p>
+      <ul>
+        <li><code>USAGE_MEDIA</code> — music, podcasts</li>
+        <li><code>USAGE_ASSISTANCE_NAVIGATION_GUIDANCE</code> — nav prompts</li>
+        <li><code>USAGE_VOICE_COMMUNICATION</code> — phone calls</li>
+        <li><code>USAGE_SAFETY</code> — collision warning (highest priority)</li>
+        <li><code>USAGE_EMERGENCY</code> — overrides everything</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Audio Zones</h3>
+      <p>AAOS supports multiple audio zones in the car (driver, passenger, rear seat). Each zone has its own volume, focus, and output device:</p>
+      <ul>
+        <li><strong>Primary zone</strong> — driver's display &amp; speakers</li>
+        <li><strong>Rear zone</strong> — rear entertainment screen</li>
+        <li>Zones can play different content simultaneously</li>
+        <li>This project simulates a single zone</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>PCM Audio Fundamentals</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h3>Sample Rate</h3>
+      <p>How many samples per second. Common values:</p>
+      <ul>
+        <li><strong>16000 Hz</strong> — voice/telephony (this project)</li>
+        <li><strong>44100 Hz</strong> — CD quality</li>
+        <li><strong>48000 Hz</strong> — professional / HDMI</li>
+      </ul>
+      <p>Nyquist theorem: max reproducible frequency = sample_rate / 2.</p>
+    </div>
+    <div class="card">
+      <h3>Bit Depth</h3>
+      <p>Bits per sample = dynamic range.</p>
+      <ul>
+        <li><strong>16-bit</strong> — 65536 levels, 96 dB range (this project)</li>
+        <li><strong>24-bit</strong> — 16.7M levels, 144 dB range</li>
+        <li><strong>32-bit float</strong> — used internally by mixers</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Latency Budget</h3>
+      <p>End-to-end latency sources:</p>
+      <ul>
+        <li><strong>Buffer size:</strong> 1024 frames @ 44100 Hz = 23 ms</li>
+        <li><strong>HAL buffer:</strong> adds 10–20 ms</li>
+        <li><strong>DSP processing:</strong> 5–10 ms</li>
+        <li><strong>Total target</strong> &lt; 100 ms (perceptible: &gt; 250 ms)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Ring Buffer (how real audio hardware works)</h2>
+  <div class="card">
+    <div class="grid-2">
+      <div>
+        <h3>The Ring Buffer Concept</h3>
+        <p>Audio hardware uses a circular (ring) buffer in DMA memory. The CPU writes chunks (periods) into the ring, and the hardware reads them continuously at the sample rate. If the CPU is late (underrun), the hardware reads stale data → audible glitch (pop/crackle).</p>
+        <ul>
+          <li><strong>Period size</strong> = chunk the CPU writes at a time (= CHUNK = 1024)</li>
+          <li><strong>Buffer size</strong> = total ring size (= 2-4 × period)</li>
+          <li><strong>Underrun</strong> = CPU wrote too slowly → glitch</li>
+          <li><strong>Overrun</strong> = CPU wrote too fast → overwrote unplayed data</li>
+        </ul>
+      </div>
+      <div>
+        <div style="background:#0f172a;color:#e2e8f0;border-radius:var(--r-lg);padding:var(--sp-md);font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.8">
+          <span style="color:#475569">Ring buffer (4 periods):</span><br>
+          [ period 0 ][ period 1 ][ period 2 ][ period 3 ]<br>
+              ↑ HW reads                  ↑ CPU writes<br><br>
+          <span style="color:#475569">When HW pointer catches CPU → underrun!</span><br>
+          <span style="color:#34d399">HAL pads with zeros → silence > glitch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 5 — HW ALTERNATIVES
+════════════════════════════════════════ -->
+<div class="page" id="tab-hwalternatives">
+
+  <h1>Hardware Alternatives</h1>
+  <p>This project runs entirely in software. Here's a map of every hardware component that's been simulated and what the real hardware would be.</p>
+
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>This Project</th><th>Real Hardware / Production System</th><th>Why Simulated</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>streams/*.wav</code> files</td>
+        <td>Live microphone, Bluetooth A2DP stream, AM/FM tuner, USB audio device</td>
+        <td>WAV files provide deterministic, reproducible audio for testing</td>
+      </tr>
+      <tr>
+        <td><code>AudioHAL</code> (Python class)</td>
+        <td>Android Audio HAL (C++ HIDL/AIDL implementation by chip vendor)</td>
+        <td>Real HAL requires BSP, kernel drivers, proprietary SDKs</td>
+      </tr>
+      <tr>
+        <td><code>AudioRouter</code> frame counter</td>
+        <td>Android AudioPolicyManager reacting to real app focus requests</td>
+        <td>Simulates a realistic event timeline without needing Android OS</td>
+      </tr>
+      <tr>
+        <td><code>PyAudio</code> (PortAudio)</td>
+        <td>ALSA → kernel SoC driver → DSP → codec chip (e.g. Qualcomm WCD938x)</td>
+        <td>PortAudio is a cross-platform abstraction for the system audio stack</td>
+      </tr>
+      <tr>
+        <td><code>alsaaudio</code> (main_alsa.py)</td>
+        <td>Direct ALSA PCM device <code>/dev/snd/pcmC0D0p</code></td>
+        <td>One step closer to real — still software, but uses Linux kernel audio</td>
+      </tr>
+      <tr>
+        <td>Python NumPy mixing</td>
+        <td>DSP hardware mixing in SoC (e.g. Qualcomm LPASS — Low Power Audio SubSystem)</td>
+        <td>LPASS has dedicated audio DSP cores; this uses CPU instead</td>
+      </tr>
+      <tr>
+        <td>16 kHz WAV files</td>
+        <td>48 kHz / 96 kHz audio, multi-channel surround</td>
+        <td>Lower rate keeps file sizes small; same math applies at any rate</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <h2>The Real Android Audio Stack (what this simulates)</h2>
+  <div class="card">
+    <pre style="background:#0f172a;color:#e2e8f0">
+┌─────────────────────────────────────────────┐
+│  App Layer                                  │
+│  MusicApp.java   NavApp.java  PhoneApp.java │
+│  AudioTrack       AudioTrack   AudioTrack   │
+└──────────────┬──────────────────────────────┘
+               │ Binder IPC
+┌──────────────▼──────────────────────────────┐
+│  audio_server (AudioFlinger)                │
+│  MixerThread: mixes all AudioTracks         │← mixer.py equivalent
+│  AudioPolicyService: routing decisions      │← router.py equivalent
+└──────────────┬──────────────────────────────┘
+               │ HIDL / AIDL HAL interface
+┌──────────────▼──────────────────────────────┐
+│  Vendor Audio HAL (C++ shared lib)          │← hal.py equivalent
+│  IStreamOut → writes to kernel driver       │
+└──────────────┬──────────────────────────────┘
+               │ write() syscall
+┌──────────────▼──────────────────────────────┐
+│  Linux Kernel — ALSA SoC driver             │← main_alsa.py level
+│  ring buffer DMA → DSP → Codec → Speaker    │
+└─────────────────────────────────────────────┘</pre>
+  </div>
+
+  <h2>Hardware components in a real car head-unit</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🎛️ LPASS (Low Power Audio SubSystem)</h3>
+      <p>A dedicated audio DSP block inside Qualcomm Snapdragon automotive SoCs. Handles mixing, echo cancellation, noise reduction, and equalisation in hardware — offloading the main CPU. This project's <code>mixer.py</code> runs on the main CPU instead.</p>
+    </div>
+    <div class="card">
+      <h3>🔊 Audio Codec Chip</h3>
+      <p>Converts digital PCM (from LPASS) to analogue voltage (DAC) and drives the speaker amplifier. Examples: Qualcomm WCD938x, Texas Instruments TAS5825. This project uses PyAudio → system soundcard → built-in DAC.</p>
+    </div>
+    <div class="card">
+      <h3>📡 Bluetooth Audio (A2DP)</h3>
+      <p>Phone music streams over Bluetooth A2DP → decoded by the head-unit → fed into LPASS as a PCM stream. The HAL presents it identically to a local file. This project simulates it with <code>music_16.wav</code>.</p>
+    </div>
+    <div class="card">
+      <h3>🎙️ Acoustic Echo Cancellation (AEC)</h3>
+      <p>During a phone call, the speaker plays call audio while the microphone picks up the caller's voice. AEC removes the echo (speaker → mic feedback). This project has no microphone — call audio is played one-way only.</p>
+    </div>
+  </div>
+
+  <h2>sox — generating test WAV files</h2>
+  <div class="card">
+    <p>The project uses <code>sox</code> to synthesise WAV files for testing (from the README):</p>
+    <pre>
+<span class="cm"># Low-pitch sine wave (220 Hz) — simulates music</span>
+sox -n -r 44100 -c 1 -b 16 streams/music_16.wav synth 6 sine 220
+
+<span class="cm"># High-pitch sine wave (1000 Hz) — simulates navigation beep</span>
+sox -n -r 44100 -c 1 -b 16 streams/nav_16.wav synth 5 sine 1000
+
+<span class="cm"># Medium sine wave (440 Hz = A4 concert pitch) — simulates call tone</span>
+sox -n -r 44100 -c 1 -b 16 streams/call_16.wav synth 10 sine 440</pre>
+    <p><strong>sox flags:</strong> <code>-n</code> = no input file (generate), <code>-r</code> = sample rate, <code>-c</code> = channels, <code>-b</code> = bit depth, <code>synth N sine F</code> = N seconds of sine at F Hz.</p>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════
+     TAB 6 — INTERVIEW PREP
+════════════════════════════════════════ -->
+<div class="page" id="tab-interview">
+
+  <h1>Interview Prep</h1>
+  <p>Common questions on audio stacks, embedded systems, Android audio, and signal processing — with answers grounded in this project.</p>
+
+  <h2>Low-Level Audio Concepts</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>What is PCM?</h3>
+      <p><strong>Pulse Code Modulation.</strong> The standard way to represent audio digitally. At each time step (1/sample_rate), the amplitude of the analogue signal is measured and quantised to the nearest integer value.</p>
+      <p>A 16-bit, 44100 Hz, mono, 1-second audio file = 44100 × 2 = 88,200 bytes.</p>
+      <div class="analogy"><div class="analogy-label">Analogy</div><p style="color:#4c1d95;margin:0">Like a flip-book animation: many still frames (samples) played rapidly enough appear as smooth motion (sound).</p></div>
+    </div>
+    <div class="card">
+      <h3>What is a buffer underrun?</h3>
+      <p>Audio hardware reads from a ring buffer at a fixed rate. If the software doesn't refill it fast enough, the hardware reads stale or zero data — causing a pop, crackle, or silence gap.</p>
+      <p><strong>In this project:</strong> <code>hal.py</code> pads with <code>b'\x00'</code> (silence) to prevent the caller from ever getting a short buffer. <code>main.py</code> also pads the mixer output before writing to PyAudio.</p>
+    </div>
+    <div class="card">
+      <h3>Why convert to float32 before mixing?</h3>
+      <p>int16 range: −32768 to 32767. Adding two max-amplitude int16 values: 32767 + 32767 = 65534 — overflows int16 (wraps to −2). float32 has 32-bit mantissa; intermediate values stay accurate. Clip back to int16 only at the very end.</p>
+    </div>
+    <div class="card">
+      <h3>What is audio ducking?</h3>
+      <p>Reducing (not muting) one stream's volume to make a higher-priority stream audible. Example: navigation prompt at 100% volume, background music reduced to 30%.</p>
+      <p><strong>Android:</strong> <code>AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK</code> tells apps to duck. Apps that don't duck get their focus revoked.</p>
+    </div>
+    <div class="card">
+      <h3>What is a HAL?</h3>
+      <p>Hardware Abstraction Layer. A standardised interface that separates OS/framework code from hardware-specific code. The framework calls the HAL interface; the vendor implements it for their chip.</p>
+      <p><strong>Android HAL types:</strong> Legacy C HAL → HIDL (Binder-based) → AIDL (current). This project's Python class is a simplified HAL: same concept, no IPC.</p>
+    </div>
+    <div class="card">
+      <h3>What is ALSA?</h3>
+      <p>Advanced Linux Sound Architecture — the kernel-level audio subsystem on Linux. It exposes audio devices as <code>/dev/snd/pcmC0D0p</code> files. PyAudio talks to PortAudio which talks to ALSA.</p>
+      <p><code>main_alsa.py</code> skips PortAudio and calls ALSA directly via <code>alsaaudio</code> — one fewer abstraction layer.</p>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+  <h2>Q&amp;A — Click to reveal answers</h2>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      How does AudioFlinger mix multiple streams in Android?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p>AudioFlinger's <strong>MixerThread</strong> runs a tight loop (similar to <code>main.py</code>'s for-loop). Each iteration it reads a period of PCM from every active AudioTrack's ring buffer, applies per-track volume and effects, sums them (like <code>mix3</code>), and writes the result to the HAL output stream.</p>
+      <p>Key difference from this project: AudioFlinger uses fixed-point 4.28 arithmetic (not float32) for performance on low-power SoCs. Modern LPASS hardware can offload mixing entirely from the ARM CPU.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      What is AudioPolicyManager and how does it differ from AudioFlinger?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p><strong>AudioPolicyManager</strong> = the brain. It decides <em>where</em> audio goes (routing) and <em>who</em> gets to play (focus). It reads audio policy configuration XML and applies rules. This project's <code>router.py</code> is a simplified AudioPolicyManager.</p>
+      <p><strong>AudioFlinger</strong> = the hands. It actually mixes and outputs PCM data. It does what the policy says. This project's <code>mixer.py</code> + <code>main.py</code>'s loop is a simplified AudioFlinger.</p>
+      <p>They communicate over Binder IPC. AudioPolicyManager tells AudioFlinger which output device and volume to use; AudioFlinger does the mixing.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      What is the Nyquist–Shannon sampling theorem?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p>To accurately represent a signal of frequency <em>f</em>, you must sample at ≥ 2f Hz (the Nyquist rate). Human hearing tops out at ~20 kHz, so CD audio at 44,100 Hz captures up to 22,050 Hz — more than enough.</p>
+      <p>This project uses 16,000 Hz sample rate (enough for voice: 300 Hz – 3.4 kHz telephone bandwidth). Sampling below Nyquist causes <strong>aliasing</strong> — high frequencies fold back and appear as low-frequency artefacts.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      What is the difference between latency and throughput in audio?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p><strong>Latency</strong>: time from audio event to output. Critical for phone calls (&lt;150 ms round-trip feels natural), gaming (&lt;20 ms), and voice assistants. Reduced by using smaller buffers (lower CHUNK value). Trade-off: more CPU wake-ups.</p>
+      <p><strong>Throughput</strong>: bytes per second of PCM data. Always fixed: sample_rate × channels × sampwidth. For 44100 Hz mono 16-bit = 88,200 bytes/sec. Not adjustable — must match hardware.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      How would you add a 4th audio stream (e.g. rear-seat entertainment) to this project?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p>1. Add a 4th HAL: <code>rear_hal = AudioHAL('streams/rear.wav')</code></p>
+      <p>2. Extend <code>mix3</code> to <code>mix4(m, n, c, r, wm, wn, wc, wr)</code> — add a 4th array and weight.</p>
+      <p>3. Add rear mode rules to <code>AudioRouter.get_weights()</code> returning a 4-tuple.</p>
+      <p>4. In <code>main.py</code> read the 4th stream each iteration and pass it to <code>mix4</code>.</p>
+      <p>In real AAOS: you'd create a second audio zone with its own output device, volume group, and focus stack. The rear zone is completely independent from the driver zone.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      Why does hal.py loop/rewind the WAV file instead of just reading to EOF?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p>The main loop runs 1000 iterations. Each iteration reads CHUNK frames. If the WAV files are shorter than 1000 × CHUNK frames, <code>readframes()</code> returns fewer bytes than requested.</p>
+      <p>The downstream pipeline (PyAudio write) expects exactly EXPECTED bytes. A short write would either crash PyAudio or cause an underrun. Looping the file simulates an infinitely long audio source — just like a streaming music service or live microphone.</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      What design pattern does router.py implement, and why is it useful?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p><strong>Strategy pattern</strong> (for <code>get_weights</code>) + <strong>Finite State Machine</strong> (for <code>update_mode</code>).</p>
+      <p>Strategy: the mixer doesn't contain any mode logic. You can change the routing policy (weights) without touching mixer.py. In production, AudioPolicyManager is loaded from a config XML — different car models can have different policies without recompiling AudioFlinger.</p>
+      <p>FSM: audio mode is a discrete state. Only one mode is active at a time. Transitions are well-defined. This makes the behaviour predictable, testable, and easy to extend with new states (e.g. "mute-all for safety alert").</p>
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q" onclick="toggleQA(this)">
+      Explain <code>np.clip(out, -32768, 32767)</code> — what happens without it?
+      <span>▼</span>
+    </div>
+    <div class="qa-a">
+      <p>After the weighted sum, values might exceed the int16 range (e.g. if two streams both have weight 0.7 but happen to have identical phase). Without clipping:</p>
+      <p><code>astype(np.int16)</code> uses C-style truncation: 33000 in int16 wraps to 33000 - 65536 = −32536. This is <strong>clipping distortion</strong> — extreme high-amplitude samples suddenly become large-negative values. You hear a sharp crack or heavy distortion.</p>
+      <p>Clipping to [−32768, 32767] before conversion causes soft saturation instead — the waveform is "flattened" at the peaks but doesn't wrap, so the distortion is much less severe.</p>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+  <h2>Analogies Cheat Sheet</h2>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>Concept</th><th>Audio Analogy</th><th>Everyday Analogy</th></tr></thead>
+    <tbody>
+      <tr><td>HAL</td><td>Audio chip driver interface</td><td>USB port — device behind it doesn't matter</td></tr>
+      <tr><td>Ring buffer</td><td>ALSA/DMA period ring</td><td>Assembly line conveyor — can't stop, must keep feeding</td></tr>
+      <tr><td>Buffer underrun</td><td>Audio glitch / pop</td><td>Car running out of petrol mid-journey</td></tr>
+      <tr><td>float32 mixing</td><td>Working in headroom before clipping</td><td>Calculating in metres before converting to inches</td></tr>
+      <tr><td>np.clip</td><td>Hard limiting / soft saturation</td><td>Speed limiter — won't let you exceed 120 km/h</td></tr>
+      <tr><td>AudioFocus</td><td>Who gets the speaker</td><td>Walkie-talkie protocol — one talks at a time</td></tr>
+      <tr><td>Ducking</td><td>Automatic volume reduction</td><td>Bar music turning down when someone makes an announcement</td></tr>
+      <tr><td>Sample rate</td><td>44100 Hz = 44100 snapshots/sec</td><td>Movie frame rate — 24 fps looks smooth enough</td></tr>
+      <tr><td>Bit depth</td><td>16-bit = 65536 volume levels</td><td>Colour depth — more bits = smoother gradients</td></tr>
+      <tr><td>CHUNK / period</td><td>1024-frame processing unit</td><td>A truck delivering exactly 1 pallet at a time</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Key Numbers to Remember</h2>
+  <div class="grid-4">
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:var(--secondary)">1024</div>
+      <div style="font-size:.8rem;color:var(--muted)">CHUNK (frames)</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">= ~23 ms at 44100 Hz</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:var(--secondary)">32767</div>
+      <div style="font-size:.8rem;color:var(--muted)">int16 max</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">= 2¹⁵ − 1</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:var(--secondary)">44100</div>
+      <div style="font-size:.8rem;color:var(--muted)">CD sample rate</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Hz (this project: 16000)</div>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="font-size:2rem;font-weight:800;color:var(--secondary)">0.3</div>
+      <div style="font-size:.8rem;color:var(--muted)">Duck weight</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">music during nav prompt</div>
+    </div>
+  </div>
+
+</div>
 
 <script>
-  // ---- Weights per mode ----
-  const MODES = {
-    music: { wm: 1.0, wn: 0.0, wc: 0.0, label: 'Music playing at full volume', color: '#6366f1' },
-    nav:   { wm: 0.3, wn: 1.0, wc: 0.0, label: 'Navigation active — music ducked to 30%', color: '#f59e0b' },
-    call:  { wm: 0.0, wn: 0.0, wc: 1.0, label: 'Incoming call — music and nav muted', color: '#ef4444' },
-  };
+// ── Tab switching ─────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
 
-  let currentMode = 'music';
-  let frame = 0;
+// ── Demo mode switcher ────────────────────
+const DEMO_MODES = {
+  music: { wm:1.0, wn:0.0, wc:0.0, status:'🎵 Music playing at full volume. Nav and call muted.' },
+  nav:   { wm:0.3, wn:1.0, wc:0.0, status:'🗺️ Navigation active — music ducked to 30%.' },
+  call:  { wm:0.0, wn:0.0, wc:1.0, status:'📞 Incoming call — music and nav fully muted.' },
+};
+let demoMode = 'music';
 
-  function setMode(mode) {
-    currentMode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+function demoSetMode(mode, btn) {
+  demoMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.remove('active-music','active-nav','active-call');
+  });
+  btn.classList.add('active-' + mode);
+  const m = DEMO_MODES[mode];
+  setW('wm', m.wm); setW('wn', m.wn); setW('wc', m.wc);
+  document.getElementById('demo-status').textContent = m.status;
+}
 
-    const m = MODES[mode];
-    setWeight('music', m.wm);
-    setWeight('nav',   m.wn);
-    setWeight('call',  m.wc);
+function setW(id, v) {
+  document.getElementById(id).style.width = (v*100)+'%';
+  document.getElementById(id+'-v').textContent = v.toFixed(1);
+}
 
-    document.getElementById('status-text').textContent = m.label;
-
-    // Update hero waveform vols
-    document.getElementById('wf-music-vol').textContent = m.wm.toFixed(1);
-    document.getElementById('wf-nav-vol').textContent   = m.wn.toFixed(1);
-    document.getElementById('wf-call-vol').textContent  = m.wc.toFixed(1);
-  }
-
-  function setWeight(stream, val) {
-    document.getElementById(`wb-${stream}`).style.width = (val * 100) + '%';
-    document.getElementById(`wv-${stream}`).textContent = val.toFixed(1);
-  }
-
-  // ---- Hero waveform bars ----
-  const STREAMS = ['music', 'nav', 'call'];
-  const COLORS  = { music: '#6366f1', nav: '#f59e0b', call: '#ef4444' };
-
-  function initWaveform(id, color) {
-    const el = document.getElementById(id);
-    for (let i = 0; i < 32; i++) {
-      const bar = document.createElement('div');
-      bar.className = 'waveform-bar';
-      bar.style.background = color;
-      bar.style.height = '4px';
-      el.appendChild(bar);
-    }
-  }
-  STREAMS.forEach(s => initWaveform(`wf-${s}`, COLORS[s]));
-
-  // ---- Canvas visualizer ----
-  const canvas = document.getElementById('viz');
+// ── Canvas waveform ───────────────────────
+const canvas = document.getElementById('viz');
+if (canvas) {
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.offsetWidth * devicePixelRatio;
   canvas.height = canvas.offsetHeight * devicePixelRatio;
+  let ph = {music:0, nav:0, call:0};
 
-  let phases = { music: 0, nav: 0, call: 0 };
-  const FREQS = { music: 0.04, nav: 0.08, call: 0.025 };
-
-  function animFrame(t) {
-    const m = MODES[currentMode];
-    frame++;
-    document.getElementById('status-mode').textContent = `mode=${currentMode} • frame=${frame}`;
-
-    // --- canvas viz ---
+  function draw() {
+    const m = DEMO_MODES[demoMode];
     const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1;
+    for (let y=.25;y<1;y+=.25){ctx.beginPath();ctx.moveTo(0,H*y);ctx.lineTo(W,H*y);ctx.stroke();}
 
-    // Background
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-
-    // Grid lines
-    ctx.strokeStyle = '#1e293b';
-    ctx.lineWidth = 1;
-    for (let y = 0.25; y < 1; y += 0.25) {
-      ctx.beginPath(); ctx.moveTo(0, H * y); ctx.lineTo(W, H * y); ctx.stroke();
-    }
-
-    // Draw each stream composited
     const streams = [
-      { key: 'call',  w: m.wc, color: '#ef4444' },
-      { key: 'nav',   w: m.wn, color: '#f59e0b' },
-      { key: 'music', w: m.wm, color: '#6366f1' },
+      {k:'call', w:m.wc, col:'#ef4444'},
+      {k:'nav',  w:m.wn, col:'#f59e0b'},
+      {k:'music',w:m.wm, col:'#6366f1'},
     ];
-
-    streams.forEach(({ key, w, color }) => {
-      if (w === 0) { phases[key] += FREQS[key] * 16; return; }
-      ctx.beginPath();
-      ctx.strokeStyle = color;
-      ctx.globalAlpha = 0.8;
-      ctx.lineWidth = 2;
-      const amp = (H / 2) * w * 0.85;
-      for (let x = 0; x < W; x++) {
-        const t2 = x / W;
-        const sine = Math.sin(phases[key] + t2 * Math.PI * 12) * amp
-                   + Math.sin(phases[key] * 1.7 + t2 * Math.PI * 7) * amp * 0.3;
-        const y = H / 2 - sine;
-        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    streams.forEach(({k,w,col}) => {
+      if (w===0){ph[k]+=.05;return;}
+      ctx.beginPath(); ctx.strokeStyle=col; ctx.globalAlpha=.8; ctx.lineWidth=2;
+      const amp = (H/2)*w*.85;
+      for (let x=0;x<W;x++){
+        const t=x/W;
+        const s = Math.sin(ph[k]+t*Math.PI*12)*amp + Math.sin(ph[k]*1.7+t*Math.PI*7)*amp*.3;
+        x===0?ctx.moveTo(x,H/2-s):ctx.lineTo(x,H/2-s);
       }
-      ctx.stroke();
-      phases[key] += FREQS[key] * 16;
+      ctx.stroke(); ctx.globalAlpha=1;
+      ph[k]+=.05;
     });
-    ctx.globalAlpha = 1;
-
-    // Mixed output overlay (white)
-    ctx.beginPath();
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-    ctx.lineWidth = 1.5;
-    const totalW = m.wm + m.wn + m.wc || 1;
-    for (let x = 0; x < W; x++) {
-      const t2 = x / W;
-      const sine = (
-        m.wm * Math.sin(phases.music - FREQS.music*16 + t2*Math.PI*12) +
-        m.wn * Math.sin(phases.nav   - FREQS.nav  *16 + t2*Math.PI*7 * 2) +
-        m.wc * Math.sin(phases.call  - FREQS.call *16 + t2*Math.PI*7)
-      ) / totalW * (H / 2) * 0.85;
-      const y = H / 2 - sine;
-      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-
-    // --- hero waveform bars ---
-    STREAMS.forEach(s => {
-      const bars = document.querySelectorAll(`#wf-${s} .waveform-bar`);
-      const w = MODES[currentMode][`w${s[0]}`]; // wm, wn, wc
-      bars.forEach((bar, i) => {
-        const base = Math.sin(phases[s] * 0.08 + i * 0.4) * 0.5 + 0.5;
-        const h = w > 0 ? Math.max(3, base * 38 * w) : 3;
-        bar.style.height = h + 'px';
-        bar.style.opacity = w > 0 ? 0.8 + base * 0.2 : 0.25;
-      });
-    });
-
-    requestAnimationFrame(animFrame);
+    requestAnimationFrame(draw);
   }
+  requestAnimationFrame(draw);
+}
 
-  requestAnimationFrame(animFrame);
+// ── Q&A accordion ─────────────────────────
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const arrow = el.querySelector('span');
+  ans.classList.toggle('open');
+  arrow.textContent = ans.classList.contains('open') ? '▲' : '▼';
+}
 
-  // Auto-cycle demo (optional)
-  const autoSequence = ['music', 'nav', 'call'];
-  let autoIdx = 0;
-  setInterval(() => {
-    autoIdx = (autoIdx + 1) % autoSequence.length;
-    setMode(autoSequence[autoIdx]);
-  }, 4000);
+// Auto-cycle demo
+const seq = ['music','nav','call'];
+let si = 0;
+setInterval(() => {
+  si = (si+1) % seq.length;
+  const m = seq[si];
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.remove('active-music','active-nav','active-call');
+  });
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(m)) b.classList.add('active-'+m);
+  });
+  const md = DEMO_MODES[m];
+  demoMode = m;
+  setW('wm',md.wm); setW('wn',md.wn); setW('wc',md.wc);
+  document.getElementById('demo-status').textContent = md.status;
+}, 4000);
 </script>
 </body>
 </html>
