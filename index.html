@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AudioStack — Mini Automotive Audio Stack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #000000;
+      --secondary: #6366f1;
+      --bg: #ffffff;
+      --surface: #f9fafb;
+      --border: #e5e7eb;
+      --muted: #6b7280;
+      --text: #111827;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --sp-sm: 8px;
+      --sp-md: 16px;
+      --sp-lg: 32px;
+      --music-color: #6366f1;
+      --nav-color: #f59e0b;
+      --call-color: #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 var(--sp-lg);
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: var(--sp-sm);
+    }
+    .nav-logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--secondary);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+    .nav-links { display: flex; gap: var(--sp-lg); align-items: center; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      background: var(--secondary);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 80px var(--sp-lg) 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: var(--sp-md);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: var(--sp-md);
+    }
+    h1 span { color: var(--secondary); }
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: var(--sp-lg);
+      max-width: 440px;
+    }
+    .hero-actions { display: flex; gap: var(--sp-sm); flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #1f2937; }
+    .btn-outline { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
+    .btn-outline:hover { border-color: var(--text); }
+
+    /* HERO VISUAL */
+    .hero-visual {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-visual-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--sp-md);
+    }
+    .waveform-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .waveform-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .waveform-name {
+      font-size: 0.75rem;
+      font-weight: 600;
+      width: 36px;
+      color: var(--muted);
+    }
+    .waveform {
+      flex: 1;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .waveform-bar {
+      flex: 1;
+      border-radius: 2px;
+      transition: height 0.3s ease, opacity 0.3s ease;
+      min-height: 3px;
+    }
+    .waveform-vol {
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      width: 36px;
+      text-align: right;
+    }
+
+    /* SECTION */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px var(--sp-lg);
+    }
+    .section-header {
+      margin-bottom: 40px;
+    }
+    .section-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+    }
+
+    /* INTERACTIVE DEMO */
+    .demo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+    }
+    .demo-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-lg);
+      margin-bottom: var(--sp-lg);
+    }
+
+    /* MODE SWITCHER */
+    .mode-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--sp-sm);
+    }
+    .mode-buttons {
+      display: flex;
+      gap: var(--sp-sm);
+      flex-wrap: wrap;
+    }
+    .mode-btn {
+      padding: 8px 18px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border);
+      background: var(--bg);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .mode-btn:hover { border-color: var(--secondary); color: var(--secondary); }
+    .mode-btn.active { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .mode-btn[data-mode="music"].active { border-color: var(--music-color); background: var(--music-color); }
+    .mode-btn[data-mode="nav"].active { border-color: var(--nav-color); background: var(--nav-color); }
+    .mode-btn[data-mode="call"].active { border-color: var(--call-color); background: var(--call-color); }
+
+    /* WEIGHTS */
+    .weights-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .weight-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .weight-icon { font-size: 1rem; width: 24px; text-align: center; }
+    .weight-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      width: 80px;
+    }
+    .weight-bar-bg {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .weight-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .weight-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      width: 36px;
+      text-align: right;
+      color: var(--muted);
+    }
+
+    /* LIVE VISUALIZER */
+    .visualizer-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: var(--sp-sm);
+    }
+    canvas#viz {
+      width: 100%;
+      height: 120px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: #000;
+      display: block;
+    }
+
+    /* STATUS BAR */
+    .status-bar {
+      margin-top: var(--sp-md);
+      display: flex;
+      align-items: center;
+      gap: var(--sp-md);
+      padding: 12px var(--sp-md);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse 1.5s infinite;
+      flex-shrink: 0;
+    }
+    .status-text { font-weight: 500; }
+    .status-mode {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--muted);
+    }
+
+    /* ARCHITECTURE */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-md);
+      margin-bottom: var(--sp-lg);
+    }
+    .arch-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .arch-card:hover {
+      border-color: var(--secondary);
+      box-shadow: 0 4px 24px rgba(99,102,241,0.1);
+    }
+    .arch-card-accent {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .arch-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+    .arch-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .arch-card p {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .arch-card code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      margin-top: 8px;
+    }
+
+    /* FLOW DIAGRAM */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      overflow-x: auto;
+      flex-wrap: wrap;
+      gap: var(--sp-sm);
+    }
+    .flow-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .flow-box {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .flow-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .flow-arrow {
+      font-size: 1.2rem;
+      color: var(--border);
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+    .flow-box.music { border-color: var(--music-color); color: var(--music-color); }
+    .flow-box.nav { border-color: var(--nav-color); color: var(--nav-color); }
+    .flow-box.call { border-color: var(--call-color); color: var(--call-color); }
+    .flow-box.mixer { border-color: var(--secondary); background: var(--secondary); color: #fff; }
+    .flow-box.hal { border-color: var(--primary); background: var(--primary); color: #fff; }
+    .flow-col { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+
+    /* CODE SNIPPET */
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    .code-block .kw { color: #818cf8; }
+    .code-block .fn { color: #34d399; }
+    .code-block .str { color: #fb923c; }
+    .code-block .cm { color: #64748b; }
+    .code-block .num { color: #f472b6; }
+
+    /* PRIORITY TABLE */
+    .priority-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .priority-table th {
+      background: var(--surface);
+      padding: 10px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    .priority-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .priority-table tr:last-child td { border-bottom: none; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .pill-music { background: #eef2ff; color: var(--music-color); }
+    .pill-nav { background: #fef3c7; color: #d97706; }
+    .pill-call { background: #fee2e2; color: #dc2626; }
+    .pill-low { background: var(--surface); color: var(--muted); }
+    .pill-high { background: #dcfce7; color: #16a34a; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: var(--sp-lg);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    footer a { color: var(--secondary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 40px 16px; }
+      .demo-top { grid-template-columns: 1fr; }
+      .arch-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 16px; }
+      section { padding: 40px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    AudioStack
+  </div>
+  <div class="nav-links">
+    <a href="#demo">Demo</a>
+    <a href="#architecture">Architecture</a>
+    <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank">GitHub</a>
+    <span class="nav-badge">Python</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-tag">🚗 Automotive Audio Stack</div>
+    <h1>Priority-based<br /><span>audio routing</span><br />for vehicles</h1>
+    <p class="hero-sub">
+      A minimal Python simulation of how in-vehicle infotainment systems handle
+      competing audio streams — calls override navigation, which ducks music.
+    </p>
+    <div class="hero-actions">
+      <a href="#demo" class="btn btn-primary">Try the demo</a>
+      <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank" class="btn btn-outline">View on GitHub</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-visual-label">Live stream levels</div>
+    <div class="waveform-container">
+      <div class="waveform-row">
+        <div class="waveform-name" style="color:var(--music-color)">MUS</div>
+        <div class="waveform" id="wf-music"></div>
+        <div class="waveform-vol" id="wf-music-vol" style="color:var(--music-color)">1.0</div>
+      </div>
+      <div class="waveform-row">
+        <div class="waveform-name" style="color:var(--nav-color)">NAV</div>
+        <div class="waveform" id="wf-nav"></div>
+        <div class="waveform-vol" id="wf-nav-vol" style="color:var(--nav-color)">0.0</div>
+      </div>
+      <div class="waveform-row">
+        <div class="waveform-name" style="color:var(--call-color)">CALL</div>
+        <div class="waveform" id="wf-call"></div>
+        <div class="waveform-vol" id="wf-call-vol" style="color:var(--call-color)">0.0</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider" />
+
+<!-- DEMO -->
+<section id="demo">
+  <div class="section-header">
+    <div class="section-tag">Interactive</div>
+    <h2>Try the router live</h2>
+    <p class="section-sub">Switch between audio modes and watch the mixer weights update in real time — exactly as the Python router does.</p>
+  </div>
+
+  <div class="demo-card">
+    <div class="demo-top">
+      <!-- MODE SWITCHER -->
+      <div>
+        <div class="mode-label">Audio mode</div>
+        <div class="mode-buttons">
+          <button class="mode-btn active" data-mode="music" onclick="setMode('music')">🎵 Music</button>
+          <button class="mode-btn" data-mode="nav" onclick="setMode('nav')">🗺️ Navigation</button>
+          <button class="mode-btn" data-mode="call" onclick="setMode('call')">📞 Call</button>
+        </div>
+
+        <div style="margin-top:24px">
+          <div class="mode-label">Mixer weights</div>
+          <div class="weights-panel">
+            <div class="weight-row">
+              <div class="weight-icon">🎵</div>
+              <div class="weight-label" style="color:var(--music-color)">Music</div>
+              <div class="weight-bar-bg">
+                <div class="weight-bar-fill" id="wb-music" style="background:var(--music-color); width:100%"></div>
+              </div>
+              <div class="weight-value" id="wv-music">1.0</div>
+            </div>
+            <div class="weight-row">
+              <div class="weight-icon">🗺️</div>
+              <div class="weight-label" style="color:var(--nav-color)">Navigation</div>
+              <div class="weight-bar-bg">
+                <div class="weight-bar-fill" id="wb-nav" style="background:var(--nav-color); width:0%"></div>
+              </div>
+              <div class="weight-value" id="wv-nav">0.0</div>
+            </div>
+            <div class="weight-row">
+              <div class="weight-icon">📞</div>
+              <div class="weight-label" style="color:var(--call-color)">Call</div>
+              <div class="weight-bar-bg">
+                <div class="weight-bar-fill" id="wb-call" style="background:var(--call-color); width:0%"></div>
+              </div>
+              <div class="weight-value" id="wv-call">0.0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISUALIZER -->
+      <div>
+        <div class="visualizer-label">Mixed output waveform</div>
+        <canvas id="viz" width="600" height="240"></canvas>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <div class="status-text" id="status-text">Music playing at full volume</div>
+      <div class="status-mode" id="status-mode">mode=music • frame=0</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-header">
+    <div class="section-tag">Architecture</div>
+    <h2>How it works</h2>
+    <p class="section-sub">Three Python modules wired together to simulate a real automotive audio pipeline.</p>
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <div class="arch-card-accent" style="background:var(--secondary)"></div>
+      <div class="arch-card-icon">🔀</div>
+      <h3>router.py</h3>
+      <p>The AudioRouter cycles through music → nav → call modes on a frame counter, returning (wm, wn, wc) weights for each mode.</p>
+      <code>get_weights() → (wm, wn, wc)</code>
+    </div>
+    <div class="arch-card">
+      <div class="arch-card-accent" style="background:var(--music-color)"></div>
+      <div class="arch-card-icon">🎚️</div>
+      <h3>mixer.py</h3>
+      <p>Converts PCM bytes to float32 arrays, applies per-stream weights, normalizes gain to prevent clipping, then converts back to PCM.</p>
+      <code>mix3(music, nav, call, wm, wn, wc)</code>
+    </div>
+    <div class="arch-card">
+      <div class="arch-card-accent" style="background:var(--primary)"></div>
+      <div class="arch-card-icon">🔊</div>
+      <h3>hal.py</h3>
+      <p>Hardware Abstraction Layer wraps PyAudio to open a 16-bit stereo output stream, isolating hardware details from the mixing logic.</p>
+      <code>open_stream(rate, channels)</code>
+    </div>
+  </div>
+
+  <!-- FLOW DIAGRAM -->
+  <div class="flow">
+    <div class="flow-col">
+      <div class="flow-box music">🎵 music.wav</div>
+      <div class="flow-box nav">🗺️ nav.wav</div>
+      <div class="flow-box call">📞 call.wav</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box" style="border-color:var(--secondary);color:var(--secondary)">router.py</div>
+      <div class="flow-sub">weights (wm, wn, wc)</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box mixer">mixer.py</div>
+      <div class="flow-sub">PCM → float → PCM</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box hal">hal.py</div>
+      <div class="flow-sub">PyAudio output</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="flow-box" style="border-color:#22c55e;color:#22c55e">🔈 Speakers</div>
+      <div class="flow-sub">16-bit stereo PCM</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- PRIORITY TABLE -->
+<section>
+  <div class="section-header">
+    <div class="section-tag">Priority rules</div>
+    <h2>Audio priority hierarchy</h2>
+    <p class="section-sub">The router enforces strict priorities: incoming calls mute everything, navigation ducks music.</p>
+  </div>
+  <div style="border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;">
+    <table class="priority-table">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Music weight</th>
+          <th>Nav weight</th>
+          <th>Call weight</th>
+          <th>Music audible</th>
+          <th>Nav audible</th>
+          <th>Call audible</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill pill-music">🎵 Music</span></td>
+          <td><code style="font-family:monospace">1.0</code></td>
+          <td><code style="font-family:monospace">0.0</code></td>
+          <td><code style="font-family:monospace">0.0</code></td>
+          <td><span class="pill pill-high">Yes</span></td>
+          <td><span class="pill pill-low">No</span></td>
+          <td><span class="pill pill-low">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-nav">🗺️ Navigation</span></td>
+          <td><code style="font-family:monospace">0.3</code></td>
+          <td><code style="font-family:monospace">1.0</code></td>
+          <td><code style="font-family:monospace">0.0</code></td>
+          <td><span class="pill pill-nav">Ducked</span></td>
+          <td><span class="pill pill-high">Yes</span></td>
+          <td><span class="pill pill-low">No</span></td>
+        </tr>
+        <tr>
+          <td><span class="pill pill-call">📞 Call</span></td>
+          <td><code style="font-family:monospace">0.0</code></td>
+          <td><code style="font-family:monospace">0.0</code></td>
+          <td><code style="font-family:monospace">1.0</code></td>
+          <td><span class="pill pill-low">No</span></td>
+          <td><span class="pill pill-low">No</span></td>
+          <td><span class="pill pill-high">Yes</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CODE -->
+<section>
+  <div class="section-header">
+    <div class="section-tag">Source</div>
+    <h2>Core mixing logic</h2>
+    <p class="section-sub">Working in float32 prevents integer overflow during mixing, then clips back to int16 for PCM output.</p>
+  </div>
+  <div class="code-block"><span class="cm"># mixer.py — weighted mix of three PCM streams</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+CHUNK = <span class="num">1024</span>
+
+<span class="kw">def</span> <span class="fn">mix3</span>(music_bytes, nav_bytes, call_bytes, wm, wn, wc):
+    m = np.frombuffer(music_bytes, dtype=np.int16).astype(np.float32)
+    n = np.frombuffer(nav_bytes,  dtype=np.int16).astype(np.float32)
+    c = np.frombuffer(call_bytes, dtype=np.int16).astype(np.float32)
+
+    L = min(len(m), len(n), len(c))
+    m, n, c = m[:L], n[:L], c[:L]
+
+    mixed = wm * m + wn * n + wc * c
+
+    <span class="cm"># Normalize if total gain &gt; 1 to prevent overflow</span>
+    total = wm + wn + wc
+    <span class="kw">if</span> total &gt; <span class="num">1.0</span>:
+        mixed /= total
+
+    <span class="cm"># Clip to int16 range and convert back to PCM</span>
+    mixed = np.clip(mixed, <span class="num">-32768</span>, <span class="num">32767</span>).astype(np.int16)
+    <span class="kw">return</span> mixed.tobytes()</div>
+</section>
+
+<hr class="divider" />
+
+<!-- FOOTER -->
+<footer>
+  <p>Built from <a href="https://github.com/adarsh07ronal/audiostackSample" target="_blank">adarsh07ronal/audiostackSample</a> · Python · PyAudio · NumPy</p>
+</footer>
+
+<script>
+  // ---- Weights per mode ----
+  const MODES = {
+    music: { wm: 1.0, wn: 0.0, wc: 0.0, label: 'Music playing at full volume', color: '#6366f1' },
+    nav:   { wm: 0.3, wn: 1.0, wc: 0.0, label: 'Navigation active — music ducked to 30%', color: '#f59e0b' },
+    call:  { wm: 0.0, wn: 0.0, wc: 1.0, label: 'Incoming call — music and nav muted', color: '#ef4444' },
+  };
+
+  let currentMode = 'music';
+  let frame = 0;
+
+  function setMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+    const m = MODES[mode];
+    setWeight('music', m.wm);
+    setWeight('nav',   m.wn);
+    setWeight('call',  m.wc);
+
+    document.getElementById('status-text').textContent = m.label;
+
+    // Update hero waveform vols
+    document.getElementById('wf-music-vol').textContent = m.wm.toFixed(1);
+    document.getElementById('wf-nav-vol').textContent   = m.wn.toFixed(1);
+    document.getElementById('wf-call-vol').textContent  = m.wc.toFixed(1);
+  }
+
+  function setWeight(stream, val) {
+    document.getElementById(`wb-${stream}`).style.width = (val * 100) + '%';
+    document.getElementById(`wv-${stream}`).textContent = val.toFixed(1);
+  }
+
+  // ---- Hero waveform bars ----
+  const STREAMS = ['music', 'nav', 'call'];
+  const COLORS  = { music: '#6366f1', nav: '#f59e0b', call: '#ef4444' };
+
+  function initWaveform(id, color) {
+    const el = document.getElementById(id);
+    for (let i = 0; i < 32; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'waveform-bar';
+      bar.style.background = color;
+      bar.style.height = '4px';
+      el.appendChild(bar);
+    }
+  }
+  STREAMS.forEach(s => initWaveform(`wf-${s}`, COLORS[s]));
+
+  // ---- Canvas visualizer ----
+  const canvas = document.getElementById('viz');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth * devicePixelRatio;
+  canvas.height = canvas.offsetHeight * devicePixelRatio;
+
+  let phases = { music: 0, nav: 0, call: 0 };
+  const FREQS = { music: 0.04, nav: 0.08, call: 0.025 };
+
+  function animFrame(t) {
+    const m = MODES[currentMode];
+    frame++;
+    document.getElementById('status-mode').textContent = `mode=${currentMode} • frame=${frame}`;
+
+    // --- canvas viz ---
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    // Background
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1;
+    for (let y = 0.25; y < 1; y += 0.25) {
+      ctx.beginPath(); ctx.moveTo(0, H * y); ctx.lineTo(W, H * y); ctx.stroke();
+    }
+
+    // Draw each stream composited
+    const streams = [
+      { key: 'call',  w: m.wc, color: '#ef4444' },
+      { key: 'nav',   w: m.wn, color: '#f59e0b' },
+      { key: 'music', w: m.wm, color: '#6366f1' },
+    ];
+
+    streams.forEach(({ key, w, color }) => {
+      if (w === 0) { phases[key] += FREQS[key] * 16; return; }
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.globalAlpha = 0.8;
+      ctx.lineWidth = 2;
+      const amp = (H / 2) * w * 0.85;
+      for (let x = 0; x < W; x++) {
+        const t2 = x / W;
+        const sine = Math.sin(phases[key] + t2 * Math.PI * 12) * amp
+                   + Math.sin(phases[key] * 1.7 + t2 * Math.PI * 7) * amp * 0.3;
+        const y = H / 2 - sine;
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      phases[key] += FREQS[key] * 16;
+    });
+    ctx.globalAlpha = 1;
+
+    // Mixed output overlay (white)
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 1.5;
+    const totalW = m.wm + m.wn + m.wc || 1;
+    for (let x = 0; x < W; x++) {
+      const t2 = x / W;
+      const sine = (
+        m.wm * Math.sin(phases.music - FREQS.music*16 + t2*Math.PI*12) +
+        m.wn * Math.sin(phases.nav   - FREQS.nav  *16 + t2*Math.PI*7 * 2) +
+        m.wc * Math.sin(phases.call  - FREQS.call *16 + t2*Math.PI*7)
+      ) / totalW * (H / 2) * 0.85;
+      const y = H / 2 - sine;
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // --- hero waveform bars ---
+    STREAMS.forEach(s => {
+      const bars = document.querySelectorAll(`#wf-${s} .waveform-bar`);
+      const w = MODES[currentMode][`w${s[0]}`]; // wm, wn, wc
+      bars.forEach((bar, i) => {
+        const base = Math.sin(phases[s] * 0.08 + i * 0.4) * 0.5 + 0.5;
+        const h = w > 0 ? Math.max(3, base * 38 * w) : 3;
+        bar.style.height = h + 'px';
+        bar.style.opacity = w > 0 ? 0.8 + base * 0.2 : 0.25;
+      });
+    });
+
+    requestAnimationFrame(animFrame);
+  }
+
+  requestAnimationFrame(animFrame);
+
+  // Auto-cycle demo (optional)
+  const autoSequence = ['music', 'nav', 'call'];
+  let autoIdx = 0;
+  setInterval(() => {
+    autoIdx = (autoIdx + 1) % autoSequence.length;
+    setMode(autoSequence[autoIdx]);
+  }, 4000);
+</script>
+</body>
+</html>
